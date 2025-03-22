@@ -8,7 +8,6 @@ const blogRoutes = require("./router/blogRoutes");
 const cors = require("cors");
 dotenv.config();
 const app = express();
-
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
@@ -23,15 +22,16 @@ app.use(
   })
 );
 
+connectDB()
 // Static file handling (uploads)
 app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/blogs", blogRoutes);
+app.use("/api", blogRoutes);
 
-// Connect to the database
-connectDB();
 
+
+app.get("/", (req, res) => res.send("API is running..."));
 // Start the server
 app.listen(5000, () => console.log("🔥 Server running on http://localhost:5000"));

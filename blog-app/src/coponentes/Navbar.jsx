@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
   // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/login");
+    navigate("/");
   };
 
   return (

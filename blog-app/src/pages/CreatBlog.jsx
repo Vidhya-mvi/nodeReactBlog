@@ -16,23 +16,30 @@ const CreateBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
     if (image) formData.append("image", image);
-
+  
     try {
-      const res = await axios.post("http://localhost:5000/api/blogs", formData, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/blogs", // ✅ Ensure this is correct
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       alert("Blog created successfully!");
       navigate(`/blogs/${res.data._id}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create");
+      setError(err.response?.data?.message || "Failed to create blog");
+      console.error("Failed to create blog:", err);
     }
   };
+  
+  
 
   return (
     <div style={{ padding: "20px" }}>
