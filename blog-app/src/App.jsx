@@ -11,6 +11,8 @@ import MyBlogs from "./pages/MyBlogs";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import ErrorPage from "./pages/ErrorPage";
+import EditBlog from "./pages/EditBlog";
+
 
 function App() {
   return (
@@ -33,11 +35,13 @@ function App() {
                 <Route path="/myblogs" element={<MyBlogs />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="*" element={<ErrorPage />} /> {/* Catch-all */}
+                <Route path="/edit-blog/:id" element={<EditBlog />} />
               </Routes>
             </Layout>
           }
         />
+        <Route path="*" element={<ErrorPage />} /> {/* Catch-all */}
+
       </Routes>
     </Router>
   );
