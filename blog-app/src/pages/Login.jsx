@@ -1,65 +1,66 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();  // Use useNavigate hook instead of useHistory
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+  
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const res = await axios.post("http://localhost:5000/api/auth/login", formData, {
+        withCredentials: true,
       });
-      const result = await response.json();
-      if (response.status === 200) {
-        setMessage(result.message);
-        navigate("/");  // Use navigate instead of history.push
-      } else {
-        setMessage(result.message);
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      setMessage("Login failed. Please try again.");
+      alert(res.data.message);
+  
+      // Save user data
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+  
+      // Navigate to blogs page after login
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
     }
   };
+  
 
   return (
-    <div>
-      <h2>Login</h2>
-      {message && <p>{message}</p>}
+    <div style={{ padding: "20px" }}>
+      <h1>Login</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="email"
           name="email"
           placeholder="Email"
-          value={formData.email}
-          onChange={handleInputChange}
+          onChange={handleChange}
           required
         />
+        <br />
         <input
           type="password"
           name="password"
           placeholder="Password"
-          value={formData.password}
-          onChange={handleInputChange}
+          onChange={handleChange}
           required
         />
+        <br />
         <button type="submit">Login</button>
       </form>
+      <p>
+        Don't have an account? <a href="/register">Register</a>
+      </p>
     </div>
   );
 };

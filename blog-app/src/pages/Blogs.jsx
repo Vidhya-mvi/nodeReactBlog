@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Home = () => {
+const Blogs = () => {
   const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")); // Check login state
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -20,11 +19,10 @@ const Home = () => {
   }, []);
 
   const handleLike = async (id) => {
-    if (!user) return alert("Please log in to like blogs!");
     try {
       await axios.put(`http://localhost:5000/api/blogs/like/${id}`, {}, { withCredentials: true });
       setBlogs((prev) =>
-        prev.map((blog) => (blog._id === id ? { ...blog, likes: [...blog.likes, user._id] } : blog))
+        prev.map((blog) => (blog._id === id ? { ...blog, likes: [...blog.likes, "newLike"] } : blog))
       );
     } catch (err) {
       console.error("Failed to like blog:", err);
@@ -32,9 +30,7 @@ const Home = () => {
   };
 
   const handleComment = async (id, commentText) => {
-    if (!user) return alert("Please log in to comment!");
     if (!commentText.trim()) return;
-
     try {
       const res = await axios.post(
         `http://localhost:5000/api/blogs/comment/${id}`,
@@ -51,7 +47,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Latest Blogs</h1>
+      <h1>All Blogs</h1>
       {blogs.map((blog) => (
         <div key={blog._id} style={{ borderBottom: "1px solid #ddd", marginBottom: "10px", paddingBottom: "10px" }}>
           <h2 onClick={() => navigate(`/blogs/${blog._id}`)} style={{ cursor: "pointer", color: "blue" }}>
@@ -68,33 +64,18 @@ const Home = () => {
           <p>By: {blog.postedBy.username}</p>
           <p>Likes: {blog.likes.length}</p>
 
-          {/* Like button (only if logged in) */}
-          {user ? (
-            <button onClick={() => handleLike(blog._id)} style={{ cursor: "pointer" }}>
-              ❤️ Like
-            </button>
-          ) : (
-            <p style={{ color: "gray" }}>Log in to like</p>
-          )}
+          <button onClick={() => handleLike(blog._id)} style={{ cursor: "pointer" }}>
+            ❤️ Like
+          </button>
 
-          {/* Comment section (only if logged in) */}
-          {user ? (
-            <>
-              <input
-                type="text"
-                placeholder="Add a comment"
-                onKeyDown={(e) => e.key === "Enter" && handleComment(blog._id, e.target.value)}
-              />
-            </>
-          ) : (
-            <p style={{ color: "gray" }}>Log in to comment</p>
-          )}
-
+          <input
+            type="text"
+            placeholder="Add a comment"
+            onKeyDown={(e) => e.key === "Enter" && handleComment(blog._id, e.target.value)}
+          />
           <ul>
             {blog.comments.map((comment, index) => (
-              <li key={index}>
-                {comment.text} - {comment.postedBy?.username}
-              </li>
+              <li key={index}>{comment.text} - {comment.postedBy?.username}</li>
             ))}
           </ul>
         </div>
@@ -103,4 +84,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Blogs;

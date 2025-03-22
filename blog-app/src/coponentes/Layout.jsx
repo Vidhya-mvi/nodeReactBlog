@@ -1,17 +1,15 @@
-import { Outlet, useLocation } from "react-router-dom";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 
-const Layout = ({ user, setUser }) => {
+const Layout = ({ children }) => {
   const location = useLocation();
-
-  // Hide navbar on login and register pages
-  const hideNavbarRoutes = ["/login", "/register"];
-  const shouldShowNavbar = !hideNavbarRoutes.includes(location.pathname);
+  const noNavbarRoutes = ["/register", "/login", "/otp", "/error"];
 
   return (
     <div>
-      {shouldShowNavbar && <Navbar user={user} setUser={setUser} />}
-      <Outlet />
+      {!noNavbarRoutes.includes(location.pathname) && <Navbar />}
+      <main style={{ padding: "20px" }}>{children}</main>
     </div>
   );
 };

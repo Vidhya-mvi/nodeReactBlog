@@ -1,45 +1,37 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";  // Import useNavigate and useLocation
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const VerifyOTP = () => {
+const OtpVerification = () => {
   const [otp, setOtp] = useState("");
-  const [message, setMessage] = useState("");
-  const location = useLocation();  // Access location to get userId
-  const navigate = useNavigate();  // Use navigate for redirection
-  const { userId } = location.state || {};
+  const [error, setError] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const userId = location.state?.userId;
+
+  if (!userId) {
+    navigate("/register");
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!otp || otp.length !== 6) {
-      setMessage("OTP must be 6 digits.");
-      return;
-    }
+    setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId, otp }),
-      });
-      const result = await response.json();
-      if (response.status === 200) {
-        setMessage(result.message);
-        navigate("/login");  // Use navigate instead of history.push
-      } else {
-        setMessage(result.message);
-      }
-    } catch (error) {
-      console.error("Error during OTP verification:", error);
-      setMessage("Verification failed. Please try again.");
+      const res = await axios.post("http://localhost:5000/api/auth/verify-otp", { userId, otp });
+      alert(res.data.message);
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "OTP verification failed");
     }
   };
 
   return (
-    <div>
-      <h2>Verify OTP</h2>
-      {message && <p>{message}</p>}
+    <div style={{ padding: "20px" }}>
+      <h1>OTP Verification</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -48,10 +40,11 @@ const VerifyOTP = () => {
           onChange={(e) => setOtp(e.target.value)}
           required
         />
+        <br />
         <button type="submit">Verify OTP</button>
       </form>
     </div>
   );
 };
 
-export default VerifyOTP;
+export default OtpVerification;

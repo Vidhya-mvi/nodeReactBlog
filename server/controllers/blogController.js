@@ -1,11 +1,17 @@
 const Blog = require("../models/blog");
 
-// 🎯 Create a new blog post (with image upload)
+
 const createBlog = async (req, res) => {
   const { title, content } = req.body;
 
   try {
-    const image = req.file ? `/uploads/${req.file.filename}` : ""; // Save file path if uploaded
+    console.log("Received data:", { title, content, file: req.file });
+
+    if (!title || !content) {
+      return res.status(400).json({ error: "Title and content are required" });
+    }
+
+    const image = req.file ? `/uploads/${req.file.filename}` : "";
 
     const newBlog = new Blog({
       title,
@@ -14,13 +20,16 @@ const createBlog = async (req, res) => {
       postedBy: req.user.id,
     });
 
-    await newBlog.save();
-    res.status(201).json(newBlog);
+    const savedBlog = await newBlog.save();
+    console.log("Blog saved successfully:", savedBlog);
+
+    res.status(201).json(savedBlog);
   } catch (err) {
-    console.error(err);
+    console.error("Error saving blog:", err);
     res.status(500).json({ error: "Failed to create blog" });
   }
 };
+
 
 // 🔥 Get all blogs
 const getBlogs = async (req, res) => {
@@ -47,9 +56,11 @@ const getBlogById = async (req, res) => {
 
     res.status(200).json(blog);
   } catch (err) {
+    console.error("Failed to fetch the blog:", err.message);
     res.status(500).json({ error: "Failed to fetch the blog" });
   }
 };
+
 
 // ✏️ Update a blog post (only author or admin)
 const updateBlog = async (req, res) => {
