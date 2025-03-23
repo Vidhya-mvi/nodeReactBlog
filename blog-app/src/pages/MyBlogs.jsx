@@ -120,7 +120,7 @@ const MyBlogs = () => {
                 flexDirection: "column",
                 justifyContent: "space-between",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               {blog.image && (

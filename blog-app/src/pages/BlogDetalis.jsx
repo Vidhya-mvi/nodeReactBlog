@@ -11,16 +11,16 @@ const BlogDetails = () => {
   const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // ✅ Fetch blog details
+  
   useEffect(() => {
     const fetchBlog = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/api/blogs/${id}`);
-        console.log("✅ Blog data:", res.data);
+        console.log(" Blog data:", res.data);
         setBlog(res.data);
         setLoading(false);
       } catch (err) {
-        console.error("❌ Failed to fetch blog:", err);
+        console.error(" Failed to fetch blog:", err);
         toast.error("Failed to load blog!");
         setLoading(false);
       }
@@ -29,7 +29,7 @@ const BlogDetails = () => {
     fetchBlog();
   }, [id]);
 
-  // ❤️ Handle Like
+
   const handleLike = async () => {
     if (!user) return toast.warn("Please log in to like this post!");
 
@@ -48,7 +48,6 @@ const BlogDetails = () => {
     }
   };
 
-  // ✍️ Add a comment
   const handleAddComment = async () => {
     if (!user) return toast.warn("Please log in to comment!");
     if (!commentText.trim()) return toast.warn("Comment cannot be empty!");
@@ -69,7 +68,7 @@ const BlogDetails = () => {
     }
   };
 
-  // 🗑️ Delete a comment
+
   const handleDeleteComment = async (commentId) => {
     if (!user) return toast.warn("Please log in to delete comments!");
 
@@ -90,7 +89,7 @@ const BlogDetails = () => {
     }
   };
 
-  // 🎯 Show loading spinner while fetching
+ 
   if (loading)
     return (
       <div style={{ textAlign: "center", marginTop: "20%" }}>
@@ -105,14 +104,14 @@ const BlogDetails = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "100vh", // ✅ Height adjusts dynamically
+        minHeight: "100vh",
         backgroundColor: "#f4f4f4",
         paddingBottom: "30px",
       }}
     >
       <ToastContainer position="top-right" autoClose={2000} />
 
-      {/* ✅ Blog Card */}
+    
       <div
         style={{
           background: "#fff",
@@ -127,7 +126,6 @@ const BlogDetails = () => {
       >
         <h1 style={{ marginBottom: "10px", color: "#333" }}>{blog.title}</h1>
 
-        {/* ✅ Image displays fully */}
         {blog.image && (
           <img
             src={blog.image}
@@ -141,18 +139,17 @@ const BlogDetails = () => {
             }}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "/fallback.jpg"; // Optional fallback
+              e.target.src = "/fallback.jpg"; 
             }}
           />
         )}
 
-        {/* Blog Content */}
+       
         <p style={{ color: "#555", lineHeight: "1.6" }}>{blog.content}</p>
         <p style={{ fontWeight: "bold", color: "#777" }}>
           <strong>By:</strong> {blog.postedBy?.username}
         </p>
 
-        {/* ❤️ Like Button */}
         <button
           onClick={handleLike}
           style={{
@@ -166,10 +163,10 @@ const BlogDetails = () => {
             fontWeight: "bold",
           }}
         >
-          {blog.likes.includes(user?._id) ? "❤️ Liked" : "🤍 Like"} ({blog.likes.length})
+          {blog.likes.includes(user?._id) ? " Liked" : " Like"} ({blog.likes.length})
         </button>
 
-        {/* Comment Input */}
+      
         {user ? (
           <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
             <input
@@ -203,7 +200,7 @@ const BlogDetails = () => {
           <p style={{ color: "gray", fontSize: "0.9rem" }}>Log in to comment</p>
         )}
 
-        {/* ✅ Display Comments */}
+   
         <h4 style={{ marginTop: "20px", color: "#444" }}>Comments</h4>
 
         <ul style={{ listStyle: "none", padding: 0, marginTop: "10px", textAlign: "left" }}>

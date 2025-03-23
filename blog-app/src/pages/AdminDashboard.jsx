@@ -7,7 +7,6 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch Users and Blogs Data
   useEffect(() => {
     const fetchAdminData = async () => {
       setLoading(true);
@@ -21,13 +20,13 @@ const AdminDashboard = () => {
           }),
         ]);
 
-        console.log("✅ Users Data:", userRes.data);
-        console.log("✅ Blogs Data:", blogRes.data);
+        console.log(" Users Data:", userRes.data);
+        console.log(" Blogs Data:", blogRes.data);
 
         setUsers(userRes.data || []);
         setBlogs(blogRes.data || []);
       } catch (err) {
-        console.error("❌ Failed to fetch admin data:", err);
+        console.error(" Failed to fetch admin data:", err);
         setError("Failed to load data. Please try again later.");
       } finally {
         setLoading(false);
@@ -37,7 +36,7 @@ const AdminDashboard = () => {
     fetchAdminData();
   }, []);
 
-  // Handle Blog Deletion
+
   const handleDeleteBlog = async (blogId) => {
     try {
       await axios.delete(`http://localhost:5000/api/blogs/${blogId}`, {
@@ -45,7 +44,7 @@ const AdminDashboard = () => {
       });
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
     } catch (err) {
-      console.error("❌ Failed to delete blog:", err);
+      console.error(" Failed to delete blog:", err);
       setError("Failed to delete the blog. Try again.");
     }
   };
@@ -74,7 +73,7 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Blogs Section */}
+     
       <div style={styles.section}>
         <h2 style={styles.subHeader}>All Blogs</h2>
         {blogs.length > 0 ? (
@@ -100,7 +99,7 @@ const AdminDashboard = () => {
   );
 };
 
-// 🎨 Inline CSS Styles
+
 const styles = {
   container: {
     padding: "20px",

@@ -10,7 +10,7 @@ const Home = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // ✅ Fetch blogs
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {

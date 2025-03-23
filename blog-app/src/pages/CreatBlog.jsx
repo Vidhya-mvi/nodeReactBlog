@@ -10,16 +10,15 @@ const CreateBlog = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Handle image upload and preview setup
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setPreview(URL.createObjectURL(file)); // Create a URL for preview
+      setPreview(URL.createObjectURL(file)); 
     }
   };
 
-  // Handle blog submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -73,7 +72,7 @@ const CreateBlog = () => {
 
         <input type="file" onChange={handleImageChange} style={styles.fileInput} />
 
-        {/* ✅ Image Preview */}
+      
         {preview && (
           <div style={styles.previewContainer}>
             <h4 style={{ color: "#333" }}>Image Preview:</h4>
@@ -89,7 +88,7 @@ const CreateBlog = () => {
   );
 };
 
-// ✅ Styles
+
 const styles = {
   container: {
     padding: "20px",
@@ -139,7 +138,7 @@ const styles = {
     fontWeight: "bold",
     transition: "background 0.2s",
   },
-  // ✅ Styles for the image preview
+  
   previewContainer: {
     marginTop: "15px",
     padding: "10px",

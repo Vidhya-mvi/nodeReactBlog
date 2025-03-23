@@ -5,10 +5,10 @@ const Layout = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
-  // Check if user is an admin
+ 
   const isAdmin = user?.role?.toLowerCase() === "admin";
 
-  // Handle Logout
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
@@ -16,7 +16,7 @@ const Layout = ({ children }) => {
 
   return (
     <div style={{ width: "100vw", height: "100vh", margin: "0", padding: "0" }}>
-      {/* Navbar */}
+      
       <nav
         style={{
           width: "100%",
@@ -31,20 +31,19 @@ const Layout = ({ children }) => {
           top: 0,
           left: 0,
           zIndex: 10,
-          height: "60px", // Explicit navbar height
+          height: "60px", 
         }}
       >
-        {/* Logo / Home Link */}
+       
         <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
           <Link
             to="/"
             style={{ color: "#fff", textDecoration: "none", marginRight: "20px" }}
           >
-            📝 Blogify
+             Blogify
           </Link>
         </div>
 
-        {/* Links Section */}
         <div>
           {user ? (
             <>
@@ -93,7 +92,7 @@ const Layout = ({ children }) => {
           )}
         </div>
 
-        {/* Logout Button for Logged-in Users */}
+      
         {user && (
           <button
             onClick={handleLogout}
@@ -112,13 +111,13 @@ const Layout = ({ children }) => {
         )}
       </nav>
 
-      {/* Page Content (pushed down under navbar) */}
+     
       <div
         style={{
-          padding: "20px", // Standard padding
-          paddingTop: "80px", // Push content below navbar
-          width: "100vw", // Full window width
-          minHeight: "100vh", // Full height fix
+          padding: "20px", 
+          paddingTop: "80px",
+          width: "100vw",
+          minHeight: "100vh", 
           backgroundColor: "#f4f4f4",
           boxSizing: "border-box",
         }}
