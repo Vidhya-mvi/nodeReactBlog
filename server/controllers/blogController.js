@@ -45,7 +45,8 @@ const getBlogs = async (req, res) => {
   }
 };
 
-// 🔎 Get a single blog by ID
+
+
 const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
@@ -60,6 +61,7 @@ const getBlogById = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch the blog" });
   }
 };
+
 
 
 // ✏️ Update a blog post (only author or admin)
@@ -105,6 +107,8 @@ const deleteBlog = async (req, res) => {
     res.status(500).json({ error: "Failed to delete the blog" });
   }
 };
+
+
 
 // ❤️ Like a blog post
 const likeBlog = async (req, res) => {

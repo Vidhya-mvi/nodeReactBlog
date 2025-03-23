@@ -10,15 +10,16 @@ const {
   unlikeBlog,
   addComment,
   deleteComment,
+ 
 } = require("../controllers/blogController");
 const {authMiddleware,isAdmin } = require("../middleware/authMiddleware")
 const upload = require("../middleware/upload");
 
-// Add multer upload middleware to the create route
-router.post("/blogs", authMiddleware, upload.single("image"), createBlog);
+router.get("/blogs", getBlogs);  
 
-router.get("/blogs", getBlogs);
-router.get("/blogs/:id",authMiddleware, getBlogById);
+router.post("/blogs", authMiddleware, upload.single("image"), createBlog);
+router.get("/blogs/:id",  getBlogById);
+
 router.put("/blogs/:id",authMiddleware, updateBlog);
 router.delete("/blogs/:id",authMiddleware, deleteBlog);
 
