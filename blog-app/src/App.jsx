@@ -5,7 +5,7 @@ import Home from "./pages/Home"
 import Register from "./pages/register";
 import OtpVerification from "./pages/VerifyOtp";
 import Login from "./pages/Login"
-import Blog from "./pages/Blogs"
+import BlogDetails from "./pages/BlogDetalis";
 import CreateBlog from "./pages/CreatBlog";
 import MyBlogs from "./pages/MyBlogs";
 import Profile from "./pages/Profile";
@@ -30,7 +30,7 @@ function App() {
             <Layout>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/blogs/:id" element={<Blog />} />
+                <Route path="/blogs/:id" element={<BlogDetails />} />
                 <Route path="/create" element={<CreateBlog />} />
                 <Route path="/myblogs" element={<MyBlogs />} />
                 <Route path="/profile" element={<Profile />} />

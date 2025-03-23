@@ -23,8 +23,8 @@ app.use(
 );
 
 connectDB()
-// Static file handling (uploads)
 app.use("/uploads", express.static("uploads"));
+
 
 // Routes
 app.use("/api/auth", authRoutes);

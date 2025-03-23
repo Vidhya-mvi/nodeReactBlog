@@ -6,25 +6,32 @@ const CreateBlog = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Handle image upload and preview setup
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file)); // Create a URL for preview
+    }
   };
 
+  // Handle blog submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
     if (image) formData.append("image", image);
-  
+
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/blogs", // ✅ Ensure this is correct
+        "http://localhost:5000/api/blogs",
         formData,
         {
           withCredentials: true,
@@ -38,36 +45,116 @@ const CreateBlog = () => {
       console.error("Failed to create blog:", err);
     }
   };
-  
-  
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Create a New Blog</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Create a New Blog</h1>
+
+      {error && <p style={styles.error}>{error}</p>}
+
+      <form onSubmit={handleSubmit} style={styles.form}>
         <input
           type="text"
           placeholder="Blog Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          style={styles.input}
         />
-        <br />
+
         <textarea
           placeholder="Blog Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows="10"
           required
+          style={styles.textarea}
         />
-        <br />
-        <input type="file" onChange={handleImageChange} />
-        <br />
-        <button type="submit">Create Blog</button>
+
+        <input type="file" onChange={handleImageChange} style={styles.fileInput} />
+
+        {/* ✅ Image Preview */}
+        {preview && (
+          <div style={styles.previewContainer}>
+            <h4 style={{ color: "#333" }}>Image Preview:</h4>
+            <img src={preview} alt="Preview" style={styles.previewImage} />
+          </div>
+        )}
+
+        <button type="submit" style={styles.button}>
+          Create Blog
+        </button>
       </form>
     </div>
   );
+};
+
+// ✅ Styles
+const styles = {
+  container: {
+    padding: "20px",
+    maxWidth: "600px",
+    margin: "0 auto",
+    backgroundColor: "#f4f4f4",
+    borderRadius: "8px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+    textAlign: "center",
+  },
+  heading: {
+    color: "#333",
+    marginBottom: "20px",
+  },
+  error: {
+    color: "red",
+    marginBottom: "10px",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  input: {
+    padding: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+  },
+  textarea: {
+    padding: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+    resize: "none",
+  },
+  fileInput: {
+    border: "none",
+  },
+  button: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    padding: "10px 15px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "bold",
+    transition: "background 0.2s",
+  },
+  // ✅ Styles for the image preview
+  previewContainer: {
+    marginTop: "15px",
+    padding: "10px",
+    backgroundColor: "#fff",
+    borderRadius: "5px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  },
+  previewImage: {
+    width: "100%",
+    height: "auto",
+    maxHeight: "300px",
+    borderRadius: "5px",
+    objectFit: "cover",
+    marginTop: "5px",
+  },
 };
 
 export default CreateBlog;
