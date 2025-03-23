@@ -20,7 +20,7 @@ const upload = require("../middleware/upload");
 router.post("/blogs", authMiddleware, upload.single("image"), createBlog);
 router.get("/blogs", getBlogs);
 router.get("/blogs/:id", getBlogById);
-router.put("/api/blogs/:id", upload.single("image"), updateBlog);
+router.put("/blogs/:id", upload.single("image"), updateBlog);
 router.delete("/blogs/:id", authMiddleware, deleteBlog);
 router.put("/blogs/like/:id", authMiddleware, likeBlog);
 router.put("/blogs/unlike/:id", authMiddleware, unlikeBlog);

@@ -5,6 +5,9 @@ const Layout = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
+  // Check if user is an admin
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+
   // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -62,6 +65,14 @@ const Layout = ({ children }) => {
               >
                 Profile
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  style={{ color: "#FFD700", textDecoration: "none", marginRight: "15px", fontWeight: "bold" }}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
             </>
           ) : (
             <>
@@ -101,17 +112,7 @@ const Layout = ({ children }) => {
       </nav>
 
       {/* Page Content (pushed down under navbar) */}
-      <div
-        // style={{
-        //   padding: "80px 20px", // Push content below navbar
-        //   width: "100%",
-        //   minHeight: "100vh",
-        //   backgroundColor: "#f4f4f4",
-        //   boxSizing: "border-box",
-        // }}
-      >
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   );
 };

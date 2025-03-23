@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 const Home = () => {
   const [blogs, setBlogs] = useState([]);
   const [commentText, setCommentText] = useState({});
+  const [expandedBlogs, setExpandedBlogs] = useState({});
+  const [showComments, setShowComments] = useState({});
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -42,6 +44,11 @@ const Home = () => {
     }
   };
 
+  // 💬 Handle typing into comment input fields
+  const handleInputChange = (id, value) => {
+    setCommentText((prev) => ({ ...prev, [id]: value }));
+  };
+
   // 🛠️ Improved Comment Handler
   const handleComment = async (id) => {
     const comment = commentText[id];
@@ -56,36 +63,44 @@ const Home = () => {
         { withCredentials: true }
       );
 
-      // ✅ Update blog with new comment
+      // ✅ Update the blog's comments directly without refetching
       setBlogs((prev) =>
-        prev.map((blog) => (blog._id === id ? res.data : blog))
+        prev.map((blog) =>
+          blog._id === id ? { ...blog, comments: res.data.comments } : blog
+        )
       );
 
-      // ✅ Clear the comment input after posting
+      // ✅ Clear the input field after a successful comment
       setCommentText((prev) => ({ ...prev, [id]: "" }));
     } catch (err) {
       console.error("Failed to add comment:", err);
+      alert("Failed to add comment. Please try again.");
     }
   };
 
-  // 💬 Handle typing into comment input fields
-  const handleInputChange = (id, value) => {
-    setCommentText((prev) => ({ ...prev, [id]: value }));
+  // 🔥 Toggle "Show More/Less"
+  const toggleExpand = (id) => {
+    setExpandedBlogs((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // 🎯 Toggle Show/Hide Comments
+  const toggleComments = (id) => {
+    setShowComments((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   // 🎯 If blogs are loading or empty
-  if (!blogs.length) return <h3>Loading blogs...</h3>;
+  if (!blogs.length) return <h3 style={{ color: "black" }}>Loading blogs...</h3>;
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Latest Blogs</h1>
+      <h1 style={{ color: "black" }}>Latest Blogs</h1>
 
       {/* ✅ Grid layout setup */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          gap: "20px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "15px",
         }}
       >
         {blogs.map((blog) => (
@@ -93,36 +108,62 @@ const Home = () => {
             key={blog._id}
             style={{
               border: "1px solid #ddd",
-              borderRadius: "10px",
-              overflow: "hidden",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+              borderRadius: "8px",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
               cursor: "pointer",
               transition: "transform 0.2s ease",
+              width: "450px",
+              display: "flex",
+              flexDirection: "column",
             }}
             onClick={() => navigate(`/blogs/${blog._id}`)}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            {/* Blog Image */}
             {blog.image && (
               <img
-                src={`http://localhost:5000${blog.image}`}
+                src={blog.image.startsWith("http") ? blog.image : `http://localhost:5000${blog.image}`}
                 alt={blog.title}
                 style={{
                   width: "100%",
-                  height: "200px",
                   objectFit: "cover",
+                  backgroundColor: "#f0f0f0",
                 }}
+                onError={(e) => (e.target.src = "/placeholder.png")}
               />
             )}
 
             {/* Blog Info */}
-            <div style={{ padding: "15px" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "#333" }}>{blog.title}</h2>
-              <p style={{ color: "#555" }}>{blog.content.substring(0, 100)}...</p>
+            <div style={{ padding: "10px" }}>
+              <h2 style={{ fontSize: "1rem", color: "#333" }}>{blog.title}</h2>
+
+              {/* ✅ Show More / Show Less */}
+              <p style={{ color: "#555", fontSize: "0.8rem" }}>
+                {expandedBlogs[blog._id] || blog.content.length <= 80
+                  ? blog.content
+                  : `${blog.content.substring(0, 80)}... `}
+                {blog.content.length > 80 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleExpand(blog._id);
+                    }}
+                    style={{
+                      background: "none",
+                      color: "#3498db",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {expandedBlogs[blog._id] ? "Show Less" : "Show More"}
+                  </button>
+                )}
+              </p>
 
               {/* Blog meta */}
-              <p style={{ fontSize: "0.9rem", color: "#777" }}>
+              <p style={{ fontSize: "0.8rem", color: "#777" }}>
                 By: <strong>{blog.postedBy?.username}</strong> | ❤️ {blog.likes.length} Likes
               </p>
 
@@ -130,41 +171,41 @@ const Home = () => {
               {user ? (
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click
+                    e.stopPropagation();
                     handleLike(blog._id);
                   }}
                   style={{
                     backgroundColor: "#4CAF50",
                     color: "#fff",
                     border: "none",
-                    padding: "8px 12px",
+                    padding: "5px 10px",
                     cursor: "pointer",
                     borderRadius: "5px",
                     fontWeight: "bold",
-                    marginTop: "10px",
+                    fontSize: "0.8rem",
                   }}
                 >
                   👍 Like
                 </button>
               ) : (
-                <p style={{ color: "gray", fontSize: "0.9rem" }}>Log in to like</p>
+                <p style={{ color: "gray", fontSize: "0.8rem" }}>Log in to like</p>
               )}
 
               {/* 📝 Comment Input */}
-              {user ? (
+              {user && (
                 <div style={{ marginTop: "10px" }}>
                   <input
                     type="text"
                     placeholder="Add a comment..."
                     value={commentText[blog._id] || ""}
                     onChange={(e) => handleInputChange(blog._id, e.target.value)}
-                    onClick={(e) => e.stopPropagation()} // Prevent card click
+                    onClick={(e) => e.stopPropagation()}
                     style={{
-                      width: "80%",
-                      padding: "8px",
-                      marginRight: "5px",
+                      width: "70%",
+                      padding: "5px",
                       borderRadius: "5px",
                       border: "1px solid #ddd",
+                      fontSize: "0.8rem",
                     }}
                   />
                   <button
@@ -173,30 +214,38 @@ const Home = () => {
                       handleComment(blog._id);
                     }}
                     style={{
-                      padding: "8px 10px",
+                      padding: "5px 7px",
                       borderRadius: "5px",
                       border: "none",
                       backgroundColor: "#3498db",
                       color: "#fff",
                       fontWeight: "bold",
+                      fontSize: "0.8rem",
                       cursor: "pointer",
                     }}
                   >
-                    💬 Comment
+                    💬
                   </button>
                 </div>
-              ) : (
-                <p style={{ color: "gray", fontSize: "0.9rem" }}>Log in to comment</p>
               )}
 
-              {/* 🗨️ Display Comments */}
-              <ul style={{ marginTop: "10px", listStyle: "none", padding: 0 }}>
-                {blog.comments.map((comment, index) => (
-                  <li key={index} style={{ marginBottom: "5px", color: "#444" }}>
-                    <strong>{comment.postedBy?.username}:</strong> {comment.text}
-                  </li>
+              {/* 🗨️ Show/Hide Comments */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleComments(blog._id);
+                }}
+                style={{ background: "none", color: "#3498db", border: "none", cursor: "pointer" }}
+              >
+                {showComments[blog._id] ? "Hide Comments" : "Show Comments"}
+              </button>
+
+              {showComments[blog._id] &&
+                blog.comments.map((comment, index) => (
+                  <p key={index} style={{ fontSize: "0.8rem", color: "#555" }}>
+                    🗨️ {comment.text} - <strong>{comment.username}</strong>
+                  </p>
                 ))}
-              </ul>
             </div>
           </div>
         ))}

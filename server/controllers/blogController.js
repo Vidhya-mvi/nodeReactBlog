@@ -11,7 +11,10 @@ const createBlog = async (req, res) => {
       return res.status(400).json({ error: "Title and content are required" });
     }
 
-    const image = req.file ? `/uploads/${req.file.filename}` : "";
+    const image = req.file
+    ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+    : "";
+  
 
     const newBlog = new Blog({
       title,
@@ -90,8 +93,9 @@ const updateBlog = async (req, res) => {
 
     // If a new image is uploaded, save the path
     if (req.file) {
-      updatedData.image = `/uploads/${req.file.filename}`;
+      updatedData.image = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     }
+    
 
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 

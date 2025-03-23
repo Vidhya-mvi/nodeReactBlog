@@ -36,7 +36,7 @@ function App() {
                 <Route path="/myblogs" element={<MyBlogs />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/edit-blog/:id" element={<EditBlog />} />
+                <Route path="/edit/:id" element={<EditBlog />} />
               </Routes>
             </Layout>
           }

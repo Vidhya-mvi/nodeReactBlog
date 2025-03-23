@@ -17,7 +17,6 @@ const Login = () => {
     setError(""); // Clear error on input
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -25,42 +24,44 @@ const Login = () => {
   
     try {
       console.log("🚀 Sending login data:", formData);
-    
+  
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         formData,
-        { withCredentials: true } // Keep this for cookies
+        { withCredentials: true }
       );
-    
+  
       console.log("✅ Login successful:", res.data);
-    
-      // Check if token exists in response
+  
       const { user, token } = res.data;
-    
+  
       if (token) {
-        localStorage.setItem("token", token); // ✅ Save token properly
+        localStorage.setItem("token", token);
         console.log("✅ Token saved:", token);
       } else {
         console.warn("⚠️ Token missing in response");
       }
-    
+  
       localStorage.setItem("user", JSON.stringify(user));
-    
       console.log("✅ User saved:", localStorage.getItem("user"));
-    
-      // Redirect to home page
-      navigate("/");
+  
+      // ✅ Check user role and redirect accordingly
+      if (user.role === "admin") {
+        navigate("/admin"); // Redirect to admin dashboard
+      } else {
+        navigate("/"); // Redirect to homepage for regular users
+      }
     } catch (err) {
       console.error("❌ Login failed:", err.response?.data || err.message);
-    
+  
       setError(
         err.response?.data?.message || "Login failed. Please check your credentials."
       );
     } finally {
       setLoading(false);
     }
-  }
-    
+  };
+  
   return (
     <div
       style={{

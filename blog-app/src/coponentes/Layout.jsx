@@ -5,6 +5,9 @@ const Layout = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
+  // Check if user is an admin
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+
   // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -63,6 +66,14 @@ const Layout = ({ children }) => {
               >
                 Profile
               </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  style={{ color: "#FFD700", textDecoration: "none", marginRight: "15px", fontWeight: "bold" }}
+                >
+                  Admin Dashboard
+                </Link>
+              )}
             </>
           ) : (
             <>

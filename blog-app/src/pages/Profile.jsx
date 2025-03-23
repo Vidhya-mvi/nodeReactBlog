@@ -17,22 +17,22 @@ const Profile = () => {
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>My Profile</h1>
+    <div style={{ padding: "20px", color: "black" }}>
+      <h1 style={{ color: "black" }}>My Profile</h1>
       {user ? (
         <div>
           <p>
-            <strong>Username:</strong> {user.username}
+            <strong style={{ color: "black" }}>Username:</strong> {user.username}
           </p>
           <p>
-            <strong>Email:</strong> {user.email}
+            <strong style={{ color: "black" }}>Email:</strong> {user.email}
           </p>
           <p>
-            <strong>Role:</strong> {user.role}
+            <strong style={{ color: "black" }}>Role:</strong> {user.role}
           </p>
         </div>
       ) : (
-        <p>Loading profile...</p>
+        <p style={{ color: "black" }}>Loading profile...</p>
       )}
     </div>
   );
