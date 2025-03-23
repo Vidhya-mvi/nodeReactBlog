@@ -152,7 +152,7 @@ const BlogDetails = () => {
                 cursor: "pointer",
               }}
             >
-              💬 Comment
+               Comment
             </button>
           </div>
         ) : (
@@ -203,7 +203,7 @@ const BlogDetails = () => {
                       fontSize: "0.8rem",
                     }}
                   >
-                    🗑️ Delete
+                     Delete
                   </button>
                 )}
               </li>

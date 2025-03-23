@@ -142,7 +142,6 @@ const verifyOTP = async (req, res) => {
   }
 };
 
-// === USER LOGIN ===
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -150,37 +149,40 @@ const login = async (req, res) => {
     console.log("Login attempt:", { email });
 
     const user = await User.findOne({ email });
-    if (!user) {
-      console.log("User not found for email:", email);
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      console.log("Password mismatch for email:", email);
-      return res.status(400).json({ message: "Invalid password" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
 
-    if (!user.isVerified) {
-      console.log("User not verified:", email);
+    if (!user.isVerified)
       return res.status(403).json({ message: "Please verify your email first" });
-    }
 
+    // Generate token
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.cookie("token", token, { httpOnly: true }).status(200).json({
-      message: "Login successful",
-      user: { id: user._id, username: user.username, role: user.role },
-    });
+    // Set cookie and include token in the response payload
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      })
+      .status(200)
+      .json({
+        message: "Login successful",
+        user: { id: user._id, username: user.username, role: user.role },
+        token, // ✅ Include token in response body too
+      });
   } catch (err) {
     console.error("Login error:", err.message);
     res.status(500).json({ message: "Login failed. Please try again." });
   }
 };
+
 
 // === GET CURRENT USER (if verified) ===
 const getCurrentUser = (req, res) => {

@@ -46,6 +46,26 @@ const getBlogs = async (req, res) => {
 };
 
 
+const getUserBlogs = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("Backend received userId:", userId);
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is missing" });
+    }
+
+    const blogs = await Blog.find({ postedBy: userId }).populate("postedBy", "username email");
+
+    if (!blogs.length) return res.status(404).json({ message: "No blogs found for this user" });
+
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.error("Error fetching user blogs:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 const getBlogById = async (req, res) => {
   try {
@@ -63,29 +83,24 @@ const getBlogById = async (req, res) => {
 };
 
 
-
-// ✏️ Update a blog post (only author or admin)
 const updateBlog = async (req, res) => {
-  const { title, content, image } = req.body;
-
   try {
-    const blog = await Blog.findById(req.params.id);
+    const { title, content } = req.body;
+    const updatedData = { title, content };
 
-    if (!blog) return res.status(404).json({ message: "Blog not found" });
-
-    // Check if the user is the author or an admin
-    if (blog.postedBy.toString() !== req.user.id && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Not authorized to update this blog" });
+    // If a new image is uploaded, save the path
+    if (req.file) {
+      updatedData.image = `/uploads/${req.file.filename}`;
     }
 
-    blog.title = title || blog.title;
-    blog.content = content || blog.content;
-    blog.image = image || blog.image;
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 
-    const updatedBlog = await blog.save();
-    res.status(200).json(updatedBlog);
+    if (!updatedBlog) return res.status(404).json({ message: "Blog not found" });
+
+    res.json(updatedBlog);
   } catch (err) {
-    res.status(500).json({ error: "Failed to update the blog" });
+    console.error("Error updating blog:", err);
+    res.status(500).json({ message: "Failed to update blog" });
   }
 };
 
@@ -194,4 +209,5 @@ module.exports = {
   unlikeBlog,
   addComment,
   deleteComment,
+  getUserBlogs,
 };

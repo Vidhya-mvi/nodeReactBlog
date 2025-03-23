@@ -22,28 +22,45 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
     try {
+      console.log("🚀 Sending login data:", formData);
+    
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         formData,
-        { withCredentials: true }
+        { withCredentials: true } // Keep this for cookies
       );
-
-      alert(res.data.message);
-
-      // Save user data
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      // Navigate to the homepage after login
+    
+      console.log("✅ Login successful:", res.data);
+    
+      // Check if token exists in response
+      const { user, token } = res.data;
+    
+      if (token) {
+        localStorage.setItem("token", token); // ✅ Save token properly
+        console.log("✅ Token saved:", token);
+      } else {
+        console.warn("⚠️ Token missing in response");
+      }
+    
+      localStorage.setItem("user", JSON.stringify(user));
+    
+      console.log("✅ User saved:", localStorage.getItem("user"));
+    
+      // Redirect to home page
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      console.error("❌ Login failed:", err.response?.data || err.message);
+    
+      setError(
+        err.response?.data?.message || "Login failed. Please check your credentials."
+      );
     } finally {
       setLoading(false);
     }
-  };
-
+  }
+    
   return (
     <div
       style={{

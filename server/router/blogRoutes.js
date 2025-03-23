@@ -10,23 +10,26 @@ const {
   unlikeBlog,
   addComment,
   deleteComment,
- 
+  getUserBlogs,
 } = require("../controllers/blogController");
-const {authMiddleware,isAdmin } = require("../middleware/authMiddleware")
+
+const { authMiddleware } = require("../middleware/authMiddleware");
 const upload = require("../middleware/upload");
 
-router.get("/blogs", getBlogs);  
-
+// Existing routes
 router.post("/blogs", authMiddleware, upload.single("image"), createBlog);
-router.get("/blogs/:id",  getBlogById);
+router.get("/blogs", getBlogs);
+router.get("/blogs/:id", getBlogById);
+router.put("/api/blogs/:id", upload.single("image"), updateBlog);
+router.delete("/blogs/:id", authMiddleware, deleteBlog);
+router.put("/blogs/like/:id", authMiddleware, likeBlog);
+router.put("/blogs/unlike/:id", authMiddleware, unlikeBlog);
+router.post("/blogs/comment/:id", authMiddleware, addComment);
+router.delete("/blogs/comment/:id/:commentId", authMiddleware, deleteComment);
 
-router.put("/blogs/:id",authMiddleware, updateBlog);
-router.delete("/blogs/:id",authMiddleware, deleteBlog);
+// 🆕 New route for user-specific blogs
+router.get("/blogs/user/:userId", authMiddleware, getUserBlogs);
 
-router.put("/blogs/like/:id",authMiddleware, likeBlog);
-router.put("/blogs/unlike/:id",authMiddleware, unlikeBlog);
 
-router.post("/blogs/comment/:id",authMiddleware, addComment);
-router.delete("/blogs/comment/:id/:commentId",authMiddleware, deleteComment);
 
 module.exports = router;
