@@ -22,7 +22,7 @@ const Register = () => {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/register", formData);
       alert(res.data.message);
-      navigate("/otp-verification", { state: { userId: res.data.userId } });
+      navigate("/otp", { state: { userId: res.data.userId } });
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     }
