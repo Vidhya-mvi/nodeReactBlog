@@ -12,7 +12,7 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import ErrorPage from "./pages/ErrorPage";
 import EditBlog from "./pages/EditBlog";
-
+import GenreBlogs from "./pages/GenreBlogs";
 
 function App() {
   return (
@@ -36,6 +36,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/edit/:id" element={<EditBlog />} />
+                <Route path="/genre/:genre" element={<GenreBlogs />} />
               </Routes>
             </Layout>
           }

@@ -87,12 +87,17 @@ const Home = () => {
       <h1 style={{ color: "black" }}>Latest Blogs</h1>
 
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: "15px",
-        }}
-      >
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)", 
+    gap: "15px",
+    maxHeight: "80vh", 
+    overflowY: "auto", 
+    scrollBehavior: "smooth", 
+    paddingRight: "10px", 
+  }}
+>
+
         {blogs.map((blog) => (
           <div
             key={blog._id}
@@ -116,6 +121,7 @@ const Home = () => {
                 alt={blog.title}
                 style={{
                   width: "100%",
+                  height:"600px",
                   objectFit: "cover",
                   backgroundColor: "#f0f0f0",
                 }}

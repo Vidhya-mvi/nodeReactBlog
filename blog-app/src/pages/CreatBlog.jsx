@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [genre, setGenre] = useState(""); 
+  const [genre, setGenre] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState(""); 
   const navigate = useNavigate();
 
   const genres = [
@@ -23,6 +25,7 @@ const CreateBlog = () => {
     "Manhwa",
   ];
 
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -30,6 +33,7 @@ const CreateBlog = () => {
       setPreview(URL.createObjectURL(file));
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,10 +59,24 @@ const CreateBlog = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      alert("Blog created successfully!");
+
+     
+      setAlertMessage(" Blog created successfully!");
+      setAlertType("success");
+
+     
+      setTimeout(() => setAlertMessage(""), 3000);
+
+     
       navigate(`/blogs/${res.data._id}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create blog");
+     
+      setAlertMessage(err.response?.data?.message || " Failed to create blog");
+      setAlertType("error");
+
+    
+      setTimeout(() => setAlertMessage(""), 3000);
+
       console.error("Failed to create blog:", err);
     }
   };
@@ -66,6 +84,18 @@ const CreateBlog = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.heading}>Create a New Blog</h1>
+
+     
+      {alertMessage && (
+        <div
+          style={{
+            ...styles.alert,
+            backgroundColor: alertType === "success" ? "#4CAF50" : "#FF4C4C",
+          }}
+        >
+          {alertMessage}
+        </div>
+      )}
 
       {error && <p style={styles.error}>{error}</p>}
 
@@ -87,6 +117,9 @@ const CreateBlog = () => {
           required
           style={styles.textarea}
         />
+        <p style={{ color: "#555", fontSize: "0.8rem" }}>
+          {content.length}/1000 characters
+        </p>
 
         <select
           value={genre}
@@ -140,6 +173,19 @@ const styles = {
     color: "red",
     marginBottom: "10px",
   },
+  alert: {
+    position: "fixed",
+    top: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    color: "#fff",
+    fontWeight: "bold",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+    zIndex: 1000,
+    animation: "fadein 0.5s, fadeout 0.5s 2.5s",
+  },
   form: {
     display: "flex",
     flexDirection: "column",
@@ -164,8 +210,8 @@ const styles = {
     border: "1px solid #ddd",
     fontSize: "16px",
     cursor: "pointer",
-    backgroundColor: "black",
-   
+    backgroundColor: "#fff",
+    color: "#333",
   },
   fileInput: {
     border: "none",

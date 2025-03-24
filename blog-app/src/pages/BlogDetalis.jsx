@@ -11,7 +11,7 @@ const BlogDetails = () => {
   const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem("user"));
 
-  
+
   useEffect(() => {
     const fetchBlog = async () => {
       try {
@@ -29,6 +29,22 @@ const BlogDetails = () => {
     fetchBlog();
   }, [id]);
 
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
+  const handleShare = () => {
+    const blogUrl = `${window.location.origin}/blogs/${id}`;
+    navigator.clipboard.writeText(blogUrl);
+    toast.success("Link copied to clipboard!");
+  };
 
   const handleLike = async () => {
     if (!user) return toast.warn("Please log in to like this post!");
@@ -89,7 +105,7 @@ const BlogDetails = () => {
     }
   };
 
- 
+
   if (loading)
     return (
       <div style={{ textAlign: "center", marginTop: "20%" }}>
@@ -111,7 +127,7 @@ const BlogDetails = () => {
     >
       <ToastContainer position="top-right" autoClose={2000} />
 
-    
+
       <div
         style={{
           background: "#fff",
@@ -139,12 +155,22 @@ const BlogDetails = () => {
             }}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "/fallback.jpg"; 
+              e.target.src = "/fallback.jpg";
             }}
           />
         )}
 
-       
+        <h1 style={{ marginBottom: "10px", color: "#333" }}>{blog.title}</h1>
+
+        <p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
+          Genre: {blog.genre || "Unknown"}
+        </p>
+
+        <p style={{ color: "#777", fontSize: "0.9rem", marginTop: "15px" }}>
+          Published on: {formatDate(blog.createdAt)}
+        </p>
+
+
         <p style={{ color: "#555", lineHeight: "1.6" }}>{blog.content}</p>
         <p style={{ fontWeight: "bold", color: "#777" }}>
           <strong>By:</strong> {blog.postedBy?.username}
@@ -166,7 +192,23 @@ const BlogDetails = () => {
           {blog.likes.includes(user?._id) ? " Liked" : " Like"} ({blog.likes.length})
         </button>
 
-      
+        <button
+          onClick={handleShare}
+          style={{
+            marginLeft: "10px",
+            padding: "8px 10px",
+            backgroundColor: "#2ecc71",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Share
+        </button>
+
+
         {user ? (
           <div style={{ marginTop: "15px", display: "flex", gap: "10px" }}>
             <input
@@ -200,7 +242,7 @@ const BlogDetails = () => {
           <p style={{ color: "gray", fontSize: "0.9rem" }}>Log in to comment</p>
         )}
 
-   
+
         <h4 style={{ marginTop: "20px", color: "#444" }}>Comments</h4>
 
         <ul style={{ listStyle: "none", padding: 0, marginTop: "10px", textAlign: "left" }}>

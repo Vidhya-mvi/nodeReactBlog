@@ -5,22 +5,22 @@ import axios from "axios";
 const OtpVerification = () => {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   const userId = location.state?.userId;
 
-  
   if (!userId) {
     navigate("/register");
     return null;
   }
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
@@ -28,8 +28,9 @@ const OtpVerification = () => {
         userId,
         otp,
       });
-      alert(res.data.message);
-      navigate("/login");
+
+      setSuccess(res.data.message || "OTP Verified Successfully!");
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       setError(err.response?.data?.message || "OTP verification failed");
     } finally {
@@ -63,7 +64,35 @@ const OtpVerification = () => {
       >
         <h1 style={{ marginBottom: "20px", color: "#333" }}>OTP Verification</h1>
 
-        {error && <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>}
+        {error && (
+          <div
+            style={{
+              backgroundColor: "#f8d7da",
+              color: "#721c24",
+              padding: "10px",
+              borderRadius: "5px",
+              marginBottom: "10px",
+              border: "1px solid #f5c6cb",
+            }}
+          >
+             {error}
+          </div>
+        )}
+
+        {success && (
+          <div
+            style={{
+              backgroundColor: "#d4edda",
+              color: "#155724",
+              padding: "10px",
+              borderRadius: "5px",
+              marginBottom: "10px",
+              border: "1px solid #c3e6cb",
+            }}
+          >
+             {success}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -86,12 +115,11 @@ const OtpVerification = () => {
           />
           <button
             type="submit"
-            disabled={otp.length !== 6 || loading} 
+            disabled={otp.length !== 6 || loading}
             style={{
               width: "100%",
               padding: "12px",
-              backgroundColor:
-                otp.length === 6 && !loading ? "#6a0572" : "#aaa", 
+              backgroundColor: otp.length === 6 && !loading ? "#6a0572" : "#aaa",
               color: "#fff",
               border: "none",
               borderRadius: "5px",
@@ -122,4 +150,3 @@ const OtpVerification = () => {
 };
 
 export default OtpVerification;
-  

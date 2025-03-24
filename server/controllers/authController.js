@@ -194,4 +194,6 @@ const logout = (req, res) => {
   res.clearCookie("token").json({ message: "Logged out successfully" });
 };
 
+
+
 module.exports = { register, verifyOTP, login, logout, getCurrentUser };

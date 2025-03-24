@@ -1,4 +1,5 @@
 const Blog = require("../models/blog");
+const User = require("../models/user")
 
 //  Create a new blog with genre
 const createBlog = async (req, res) => {
@@ -47,22 +48,23 @@ const getBlogs = async (req, res) => {
   }
 };
 
-//  Get blogs by genre
 const getBlogsByGenre = async (req, res) => {
-  const { genre } = req.params;
   try {
-    const blogs = await Blog.find({ genre })
-      .populate("postedBy", "username")
-      .sort({ createdAt: -1 });
+    const genre = req.params.genre;
+    const blogs = await Blog.find({ genre: { $regex: new RegExp(`^${genre}$`, "i") } });
 
-    if (!blogs.length) return res.status(404).json({ message: "No blogs found for this genre" });
+    if (!blogs.length) {
+      return res.status(404).json({ message: "No blogs found for this genre" });
+    }
 
-    res.status(200).json(blogs);
-  } catch (err) {
-    console.error("Error fetching genre blogs:", err);
+    res.json(blogs);
+  } catch (error) {
+    console.error("Error fetching blogs by genre:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 //  Get a single blog by ID
 const getBlogById = async (req, res) => {
@@ -214,6 +216,17 @@ const deleteComment = async (req, res) => {
   }
 };
 
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select("-password"); // Exclude passwords for safety
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Failed to fetch users:", err);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
+
 module.exports = {
   createBlog,
   getBlogs,
@@ -226,4 +239,5 @@ module.exports = {
   deleteComment,
   getUserBlogs,
   getBlogsByGenre, 
+  getAllUsers
 };

@@ -129,6 +129,7 @@ const MyBlogs = () => {
                   alt={blog.title}
                   style={{
                     width: "100%",
+                    height:"700px",
                     objectFit: "cover",
                     borderRadius: "12px",
                     marginBottom: "0.5rem",
@@ -137,6 +138,9 @@ const MyBlogs = () => {
                 />
               )}
 
+<p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
+                Genre: {blog.genre || "Unknown"}
+              </p>
               <h3 style={{ fontSize: "1.4rem", fontWeight: "600", color: "black", marginBottom: "0.5rem" }}>{blog.title}</h3>
 
               <p style={{ color: "black", fontSize: "1rem", marginBottom: "0.5rem", lineHeight: "1.6", flexGrow: 1 }}>

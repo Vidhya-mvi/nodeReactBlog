@@ -2,35 +2,64 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
+
+const Spinner = () => (
+  <div style={{ textAlign: "center", padding: "20px" }}>
+    <div className="spinner" />
+    <p>Loading...</p>
+    <style>
+      {`
+        .spinner {
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border-left-color: #4CAF50;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}
+    </style>
+  </div>
+);
+
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [originalTitle, setOriginalTitle] = useState("");
+  const [originalContent, setOriginalContent] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [error, setError] = useState("");
 
-
+  
   useEffect(() => {
     const fetchBlog = async () => {
       try {
         console.log(`🔍 Fetching blog data for ID: ${id}`);
-        const res = await axios.get(`http://localhost:5000/api/blogs/${id}`, { withCredentials: true });
+        const res = await axios.get(`http://localhost:5000/api/blogs/${id}`, {
+          withCredentials: true,
+        });
 
         setTitle(res.data.title);
         setContent(res.data.content);
+        setOriginalTitle(res.data.title);
+        setOriginalContent(res.data.content);
 
-     
         if (res.data.image) {
           setPreview(`http://localhost:5000${res.data.image}`);
         }
 
         console.log(" Blog data fetched:", res.data);
       } catch (err) {
-        console.error("Failed to fetch blog:", err);
+        console.error(" Failed to fetch blog:", err);
         setError("Failed to load blog. Please try again.");
       } finally {
         setLoading(false);
@@ -41,8 +70,26 @@ const EditBlog = () => {
   }, [id]);
 
  
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+ 
+  const handleReset = () => {
+    setTitle(originalTitle);
+    setContent(originalContent);
+    setImage(null);
+    setPreview(preview);
+  };
+
+
   const handleUpdate = async (e) => {
     e.preventDefault();
+    setUpdating(true);
 
     const formData = new FormData();
     formData.append("title", title);
@@ -58,50 +105,45 @@ const EditBlog = () => {
       });
 
       alert(" Blog updated successfully!");
-      navigate("/my-blogs");
+      navigate("/");
     } catch (err) {
       console.error(" Failed to update blog:", err);
       alert("Failed to update blog.");
+    } finally {
+      setUpdating(false);
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+  const handleCancel = () => navigate("/");
 
-  if (loading) return <p style={{ color: "black" }}>Loading...</p>;
+
+  if (loading) return <Spinner />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
+  
   return (
     <div style={{ padding: "20px" }}>
       <h1 style={{ color: "black" }}>Edit Blog</h1>
 
       <form onSubmit={handleUpdate}>
-      
         <input
           type="text"
           placeholder="Blog Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          style={{ width: "100%", marginBottom: "10px", color: "white" }}
+          style={{ width: "100%", marginBottom: "10px", color: "black" }}
         />
 
-       
         <textarea
           placeholder="Blog Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows="10"
           required
-          style={{ width: "100%", marginBottom: "10px", color: "white" }}
+          style={{ width: "100%", marginBottom: "10px", color: "black" }}
         />
 
-     
         <input
           type="file"
           accept="image/*"
@@ -126,20 +168,54 @@ const EditBlog = () => {
           </div>
         )}
 
-      
-        <button
-          type="submit"
-          style={{
-            cursor: "pointer",
-            padding: "10px 20px",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-          }}
-        >
-          Update Blog
-        </button>
+       
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            type="submit"
+            style={{
+              cursor: updating ? "wait" : "pointer",
+              padding: "10px 20px",
+              backgroundColor: updating ? "#ddd" : "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+            }}
+            disabled={updating}
+          >
+            {updating ? "Updating..." : "Update Blog"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleReset}
+            style={{
+              cursor: "pointer",
+              padding: "10px 20px",
+              backgroundColor: "#FFA500",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+            }}
+          >
+            Undo Changes
+          </button>
+
+        
+          <button
+            type="button"
+            onClick={handleCancel}
+            style={{
+              cursor: "pointer",
+              padding: "10px 20px",
+              backgroundColor: "#d9534f",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

@@ -11,10 +11,11 @@ const {
   addComment,
   deleteComment,
   getUserBlogs,
-  getBlogsByGenre
+  getBlogsByGenre,
+  getAllUsers
 } = require("../controllers/blogController");
 
-const { authMiddleware } = require("../middleware/authMiddleware");
+const { authMiddleware,isAdmin } = require("../middleware/authMiddleware");
 const upload = require("../middleware/upload");
 
 router.post("/blogs", authMiddleware, upload.single("image"), createBlog);
@@ -30,6 +31,6 @@ router.delete("/blogs/comment/:id/:commentId", authMiddleware, deleteComment);
 router.get("/blogs/user/:userId", authMiddleware, getUserBlogs);
 router.get('/blogs/genre/:genre', getBlogsByGenre);
 
-
+router.get("/users", authMiddleware, isAdmin, getAllUsers);
 
 module.exports = router;

@@ -21,7 +21,8 @@ const blogSchema = new mongoose.Schema(
         },
         genre: { 
             type: String, 
-            required: true 
+            required: true,
+            lowercase: true 
         },
         likes: [{ type: ObjectId, ref: "User" }],
         comments: [

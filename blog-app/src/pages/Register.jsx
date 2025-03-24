@@ -39,7 +39,7 @@ const Register = () => {
         "http://localhost:5000/api/auth/register",
         formData
       );
-      setSuccess("🎉 Registration successful! Redirecting to OTP...");
+      setSuccess(" Registration successful! Redirecting to OTP...");
       setTimeout(() => {
         navigate("/otp", { state: { userId: res.data.userId } });
       }, 2000);
@@ -55,7 +55,7 @@ const Register = () => {
       style={{
         height: "100vh",
         width: "100vw",
-        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)", // Soft blue gradient
+        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)", 
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

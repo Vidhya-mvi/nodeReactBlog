@@ -28,10 +28,11 @@ const Layout = ({ children }) => {
   ];
 
   const handleGenreClick = (genre) => {
-    navigate(`/genre/${genre.toLowerCase()}`);
+    const formattedGenre = encodeURIComponent(genre.toLowerCase());
+    navigate(`/genre/${formattedGenre}`);
     setShowGenres(false);
   };
-
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
