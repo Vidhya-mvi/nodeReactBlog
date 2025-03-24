@@ -10,7 +10,6 @@ const Home = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
-
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -23,7 +22,6 @@ const Home = () => {
     fetchBlogs();
   }, []);
 
-  // ✅ Like functionality
   const handleLike = async (id) => {
     if (!user) return alert("Please log in to like blogs!");
     try {
@@ -44,12 +42,10 @@ const Home = () => {
     }
   };
 
-  // 💬 Handle typing into comment input fields
   const handleInputChange = (id, value) => {
     setCommentText((prev) => ({ ...prev, [id]: value }));
   };
 
-  // 🛠️ Improved Comment Handler
   const handleComment = async (id) => {
     const comment = commentText[id];
 
@@ -63,14 +59,12 @@ const Home = () => {
         { withCredentials: true }
       );
 
-      // ✅ Update the blog's comments directly without refetching
       setBlogs((prev) =>
         prev.map((blog) =>
           blog._id === id ? { ...blog, comments: res.data.comments } : blog
         )
       );
 
-      // ✅ Clear the input field after a successful comment
       setCommentText((prev) => ({ ...prev, [id]: "" }));
     } catch (err) {
       console.error("Failed to add comment:", err);
@@ -78,24 +72,20 @@ const Home = () => {
     }
   };
 
-  // 🔥 Toggle "Show More/Less"
   const toggleExpand = (id) => {
     setExpandedBlogs((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // 🎯 Toggle Show/Hide Comments
   const toggleComments = (id) => {
     setShowComments((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // 🎯 If blogs are loading or empty
   if (!blogs.length) return <h3 style={{ color: "black" }}>Loading blogs...</h3>;
 
   return (
     <div style={{ padding: "20px" }}>
       <h1 style={{ color: "black" }}>Latest Blogs</h1>
 
-      {/* ✅ Grid layout setup */}
       <div
         style={{
           display: "grid",
@@ -133,11 +123,9 @@ const Home = () => {
               />
             )}
 
-            {/* Blog Info */}
             <div style={{ padding: "10px" }}>
               <h2 style={{ fontSize: "1rem", color: "#333" }}>{blog.title}</h2>
 
-              {/* ✅ Show More / Show Less */}
               <p style={{ color: "#555", fontSize: "0.8rem" }}>
                 {expandedBlogs[blog._id] || blog.content.length <= 80
                   ? blog.content
@@ -162,12 +150,15 @@ const Home = () => {
                 )}
               </p>
 
-              {/* Blog meta */}
               <p style={{ fontSize: "0.8rem", color: "#777" }}>
-                By: <strong>{blog.postedBy?.username}</strong> | ❤️ {blog.likes.length} Likes
+                By: <strong>{blog.postedBy?.username}</strong> |  {blog.likes.length} Likes
               </p>
 
-              {/* Like Button */}
+            
+              <p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
+                Genre: {blog.genre || "Unknown"}
+              </p>
+
               {user ? (
                 <button
                   onClick={(e) => {
@@ -185,13 +176,12 @@ const Home = () => {
                     fontSize: "0.8rem",
                   }}
                 >
-                  👍 Like
+                  Like
                 </button>
               ) : (
                 <p style={{ color: "gray", fontSize: "0.8rem" }}>Log in to like</p>
               )}
 
-              {/* 📝 Comment Input */}
               {user && (
                 <div style={{ marginTop: "10px" }}>
                   <input
@@ -224,12 +214,11 @@ const Home = () => {
                       cursor: "pointer",
                     }}
                   >
-                    💬
+                    ()
                   </button>
                 </div>
               )}
 
-              {/* 🗨️ Show/Hide Comments */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -243,7 +232,7 @@ const Home = () => {
               {showComments[blog._id] &&
                 blog.comments.map((comment, index) => (
                   <p key={index} style={{ fontSize: "0.8rem", color: "#555" }}>
-                    🗨️ {comment.text} - <strong>{comment.username}</strong>
+                    {comment.text} - <strong>{comment.username}</strong>
                   </p>
                 ))}
             </div>

@@ -9,11 +9,11 @@ const path = require("path");
 const cors = require("cors");
 dotenv.config();
 const app = express();
-// Middleware setup
+
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS configuration
+
 app.use(
   cors({
     origin: "http://localhost:5173", 
@@ -27,12 +27,12 @@ connectDB()
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+
 app.use("/api/auth", authRoutes);
 app.use("/api", blogRoutes);
 
 
 
 app.get("/", (req, res) => res.send("API is running..."));
-// Start the server
-app.listen(5000, () => console.log("🔥 Server running on http://localhost:5000"));
+
+app.listen(5000, () => console.log(" Server running on http://localhost:5000"));

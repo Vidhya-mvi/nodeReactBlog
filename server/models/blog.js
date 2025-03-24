@@ -19,6 +19,10 @@ const blogSchema = new mongoose.Schema(
            type:String,
            default:""
         },
+        genre: { 
+            type: String, 
+            required: true 
+        },
         likes: [{ type: ObjectId, ref: "User" }],
         comments: [
             {

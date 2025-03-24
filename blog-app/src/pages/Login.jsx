@@ -11,10 +11,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear error on input
+    setError(""); 
   };
 
   const handleSubmit = async (e) => {
@@ -23,7 +22,7 @@ const Login = () => {
     setLoading(true);
   
     try {
-      console.log("🚀 Sending login data:", formData);
+      console.log(" Sending login data:", formData);
   
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
@@ -31,28 +30,27 @@ const Login = () => {
         { withCredentials: true }
       );
   
-      console.log("✅ Login successful:", res.data);
+      console.log(" Login successful:", res.data);
   
       const { user, token } = res.data;
   
       if (token) {
         localStorage.setItem("token", token);
-        console.log("✅ Token saved:", token);
+        console.log(" Token saved:", token);
       } else {
-        console.warn("⚠️ Token missing in response");
+        console.warn(" Token missing in response");
       }
   
       localStorage.setItem("user", JSON.stringify(user));
-      console.log("✅ User saved:", localStorage.getItem("user"));
+      console.log("User saved:", localStorage.getItem("user"));
   
-      // ✅ Check user role and redirect accordingly
       if (user.role === "admin") {
-        navigate("/admin"); // Redirect to admin dashboard
+        navigate("/admin"); 
       } else {
-        navigate("/"); // Redirect to homepage for regular users
+        navigate("/"); 
       }
     } catch (err) {
-      console.error("❌ Login failed:", err.response?.data || err.message);
+      console.error(" Login failed:", err.response?.data || err.message);
   
       setError(
         err.response?.data?.message || "Login failed. Please check your credentials."
@@ -67,7 +65,7 @@ const Login = () => {
       style={{
         height: "100vh",
         width: "100vw",
-        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)", // Soft blue gradient
+        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)", 
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -75,7 +73,6 @@ const Login = () => {
         overflow: "hidden",
       }}
     >
-      {/* Form Container */}
       <div
         style={{
           backgroundColor: "#fff",
@@ -91,7 +88,6 @@ const Login = () => {
 
         {error && <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>}
 
-        {/* Form Section */}
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -124,14 +120,13 @@ const Login = () => {
             }}
           />
 
-          {/* Login Button with loading animation */}
           <button
             type="submit"
             disabled={loading}
             style={{
               width: "100%",
               padding: "12px",
-              backgroundColor: loading ? "#aaa" : "#6a0572", // Gray while loading
+              backgroundColor: loading ? "#aaa" : "#6a0572", 
               color: "#fff",
               border: "none",
               borderRadius: "5px",
@@ -153,7 +148,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Navigation Links */}
         <p style={{ marginTop: "10px", color: "#555" }}>
           <Link to="/" style={{ color: "#6a0572", textDecoration: "none" }}>
             Home

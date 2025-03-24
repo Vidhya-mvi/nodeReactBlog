@@ -4,7 +4,7 @@ import Layout from "./coponentes/Layout";
 import Home from "./pages/Home"
 import Register from "./pages/register";
 import OtpVerification from "./pages/VerifyOtp";
-import Login from "./pages/Login"
+import Login from "./pages/login";
 import BlogDetails from "./pages/BlogDetalis";
 import CreateBlog from "./pages/CreatBlog";
 import MyBlogs from "./pages/MyBlogs";
@@ -18,12 +18,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* 👤 Routes WITHOUT Layout */}
+        
         <Route path="/login" element={<Login />} />
         <Route path="/otp" element={<OtpVerification />} />
         <Route path="/register" element={<Register />} />
 
-        {/* 🏠 Routes WITH Layout */}
         <Route
           path="/*"
           element={
@@ -41,7 +40,7 @@ function App() {
             </Layout>
           }
         />
-        <Route path="*" element={<ErrorPage />} /> {/* Catch-all */}
+        <Route path="*" element={<ErrorPage />} /> 
 
       </Routes>
     </Router>

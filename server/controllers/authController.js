@@ -5,14 +5,12 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-// Utility function to generate 6-digit OTP
 const generateOTP = () => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  console.log('Generated OTP:', otp); // Log the OTP
+  console.log('Generated OTP:', otp); 
   return otp;
 };
 
-// Email transporter setup
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -26,27 +24,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Password validation regex
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-// === REGISTER A NEW USER ===
+// register
 const register = async (req, res) => {
   let { username, email, password, role } = req.body;
 
   try {
     console.log("Register attempt:", { username, email, role });
     
-    // Normalize email to lowercase
     email = email.toLowerCase();
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log("User already exists:", existingUser);
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Password validation
     console.log("Password provided:", password);
     if (!passwordRegex.test(password)) {
       console.log("Password validation failed for:", email);
@@ -56,10 +50,8 @@ const register = async (req, res) => {
       });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user but set isVerified to false
     const newUser = new User({
       username,
       email,
@@ -70,19 +62,16 @@ const register = async (req, res) => {
 
     await newUser.save();
 
-    // Generate OTP
     const otp = generateOTP();
-    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 mins
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); 
     console.log("OTP expires at:", otpExpires);
 
-    // Save OTP in database
     await OTP.findOneAndUpdate(
       { userId: newUser._id },
       { otp, expiresAt: otpExpires },
       { upsert: true, new: true }
     );
 
-    // Send OTP Email
     try {
       await transporter.sendMail({
         from: `Blog App <${process.env.EMAIL_USER}>`,
@@ -106,7 +95,7 @@ const register = async (req, res) => {
   }
 };
 
-// === VERIFY OTP ===
+//  VERIFY OTP 
 const verifyOTP = async (req, res) => {
   const { userId, otp } = req.body;
 
@@ -132,7 +121,6 @@ const verifyOTP = async (req, res) => {
     user.isVerified = true;
     await user.save();
 
-    // Delete OTP after verification
     await OTP.deleteMany({ userId });
 
     res.status(200).json({ message: "User verified successfully. You can now log in." });
@@ -142,6 +130,7 @@ const verifyOTP = async (req, res) => {
   }
 };
 
+// login
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -157,14 +146,12 @@ const login = async (req, res) => {
     if (!user.isVerified)
       return res.status(403).json({ message: "Please verify your email first" });
 
-    // Generate token
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    // Set cookie and include token in the response payload
     res
       .cookie("token", token, {
         httpOnly: true,
@@ -175,7 +162,7 @@ const login = async (req, res) => {
       .json({
         message: "Login successful",
         user: { id: user._id, username: user.username, role: user.role },
-        token, // ✅ Include token in response body too
+        token, 
       });
   } catch (err) {
     console.error("Login error:", err.message);
@@ -184,7 +171,6 @@ const login = async (req, res) => {
 };
 
 
-// === GET CURRENT USER (if verified) ===
 const getCurrentUser = (req, res) => {
   try {
     const token = req.cookies.token;
@@ -203,7 +189,7 @@ const getCurrentUser = (req, res) => {
   }
 };
 
-// === LOGOUT ===
+//  LOGOUT 
 const logout = (req, res) => {
   res.clearCookie("token").json({ message: "Logged out successfully" });
 };

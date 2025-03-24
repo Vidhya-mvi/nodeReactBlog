@@ -5,7 +5,6 @@ body {
   padding: 0;
 }
 
-/* Navbar styling */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -32,7 +31,6 @@ body {
   padding: 5px 10px;
 }
 
-/* Blog card styling */
 .blog-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

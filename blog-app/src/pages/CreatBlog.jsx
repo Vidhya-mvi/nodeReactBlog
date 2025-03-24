@@ -5,27 +5,45 @@ import { useNavigate } from "react-router-dom";
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [genre, setGenre] = useState(""); 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const genres = [
+    "Technology",
+    "Health",
+    "Lifestyle",
+    "Finance",
+    "Education",
+    "Anime",
+    "Books",
+    "Art",
+    "Manhwa",
+  ];
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setPreview(URL.createObjectURL(file)); 
+      setPreview(URL.createObjectURL(file));
     }
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    if (!genre) {
+      setError("Please select a genre");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
+    formData.append("genre", genre);
     if (image) formData.append("image", image);
 
     try {
@@ -70,9 +88,24 @@ const CreateBlog = () => {
           style={styles.textarea}
         />
 
+        <select
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          required
+          style={styles.select}
+        >
+          <option value="" disabled>
+            Select a Genre
+          </option>
+          {genres.map((g, index) => (
+            <option key={index} value={g}>
+              {g}
+            </option>
+          ))}
+        </select>
+
         <input type="file" onChange={handleImageChange} style={styles.fileInput} />
 
-      
         {preview && (
           <div style={styles.previewContainer}>
             <h4 style={{ color: "#333" }}>Image Preview:</h4>
@@ -125,6 +158,15 @@ const styles = {
     fontSize: "16px",
     resize: "none",
   },
+  select: {
+    padding: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+    cursor: "pointer",
+    backgroundColor: "black",
+   
+  },
   fileInput: {
     border: "none",
   },
@@ -138,7 +180,6 @@ const styles = {
     fontWeight: "bold",
     transition: "background 0.2s",
   },
-  
   previewContainer: {
     marginTop: "15px",
     padding: "10px",

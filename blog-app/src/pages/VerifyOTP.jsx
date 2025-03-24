@@ -11,13 +11,13 @@ const OtpVerification = () => {
 
   const userId = location.state?.userId;
 
-  // If no userId is found, redirect to registration
+  
   if (!userId) {
     navigate("/register");
     return null;
   }
 
-  // Handle OTP submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -86,12 +86,12 @@ const OtpVerification = () => {
           />
           <button
             type="submit"
-            disabled={otp.length !== 6 || loading} // Button only works when OTP is fully entered
+            disabled={otp.length !== 6 || loading} 
             style={{
               width: "100%",
               padding: "12px",
               backgroundColor:
-                otp.length === 6 && !loading ? "#6a0572" : "#aaa", // Button grayed out when disabled
+                otp.length === 6 && !loading ? "#6a0572" : "#aaa", 
               color: "#fff",
               border: "none",
               borderRadius: "5px",

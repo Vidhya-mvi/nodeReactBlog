@@ -11,12 +11,12 @@ const {
   addComment,
   deleteComment,
   getUserBlogs,
+  getBlogsByGenre
 } = require("../controllers/blogController");
 
 const { authMiddleware } = require("../middleware/authMiddleware");
 const upload = require("../middleware/upload");
 
-// Existing routes
 router.post("/blogs", authMiddleware, upload.single("image"), createBlog);
 router.get("/blogs", getBlogs);
 router.get("/blogs/:id", getBlogById);
@@ -27,8 +27,8 @@ router.put("/blogs/unlike/:id", authMiddleware, unlikeBlog);
 router.post("/blogs/comment/:id", authMiddleware, addComment);
 router.delete("/blogs/comment/:id/:commentId", authMiddleware, deleteComment);
 
-// 🆕 New route for user-specific blogs
 router.get("/blogs/user/:userId", authMiddleware, getUserBlogs);
+router.get('/blogs/genre/:genre', getBlogsByGenre);
 
 
 

@@ -13,13 +13,11 @@ const Register = () => {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear errors when typing
+    setError(""); 
   };
 
-  // Basic validation checks
   const validateForm = () => {
     const { username, email, password } = formData;
     if (username.length < 3) return "Username must be at least 3 characters!";
@@ -28,7 +26,6 @@ const Register = () => {
     return null;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -66,7 +63,6 @@ const Register = () => {
         overflow: "hidden",
       }}
     >
-      {/* Form Container */}
       <div
         style={{
           backgroundColor: "#fff",
@@ -83,7 +79,6 @@ const Register = () => {
         {error && <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>}
         {success && <p style={{ color: "green", marginBottom: "10px" }}>{success}</p>}
 
-        {/* Form Section */}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -131,14 +126,13 @@ const Register = () => {
             }}
           />
 
-          {/* Register Button with loading animation */}
           <button
             type="submit"
             disabled={loading}
             style={{
               width: "100%",
               padding: "12px",
-              backgroundColor: loading ? "#aaa" : "#6a0572", // Gray while loading
+              backgroundColor: loading ? "#aaa" : "#6a0572", 
               color: "#fff",
               border: "none",
               borderRadius: "5px",
@@ -160,7 +154,6 @@ const Register = () => {
           </button>
         </form>
 
-        {/* Navigation Links */}
         <p style={{ marginTop: "10px", color: "#555" }}>
           <Link to="/" style={{ color: "#6a0572", textDecoration: "none" }}>
             Home

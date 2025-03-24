@@ -18,7 +18,7 @@ const MyBlogs = () => {
       setLoading(true);
       try {
         if (!userId || !token) {
-          console.error("🚨 No user data or token found!");
+          console.error(" No user data or token found!");
           setError("You need to log in first.");
           setLoading(false);
           return;
@@ -32,11 +32,11 @@ const MyBlogs = () => {
         if (Array.isArray(res.data)) {
           setBlogs(res.data);
         } else {
-          console.error("⚠️ Unexpected response data:", res.data);
+          console.error(" Unexpected response data:", res.data);
           setError("Unexpected data format received.");
         }
       } catch (err) {
-        console.error("❌ Error fetching user blogs:", err.response?.data || err.message);
+        console.error(" Error fetching user blogs:", err.response?.data || err.message);
         setError("Failed to load blogs. Please try again.");
       } finally {
         setLoading(false);
@@ -60,9 +60,9 @@ const MyBlogs = () => {
 
       if (res.status !== 200) throw new Error("Failed to delete blog.");
     } catch (error) {
-      console.error("❌ Error deleting blog:", error.response?.data || error.message);
+      console.error(" Error deleting blog:", error.response?.data || error.message);
       alert(`Failed to delete blog: ${error.response?.data?.message || error.message}`);
-      setBlogs(originalBlogs); // Rollback UI on error
+      setBlogs(originalBlogs); 
     }
   };
 
@@ -89,7 +89,7 @@ const MyBlogs = () => {
         throw new Error("Failed to delete comment.");
       }
     } catch (error) {
-      console.error("❌ Error deleting comment:", error.response?.data || error.message);
+      console.error(" Error deleting comment:", error.response?.data || error.message);
       alert(`Failed to delete comment: ${error.response?.data?.message || error.message}`);
     }
   };
@@ -144,9 +144,9 @@ const MyBlogs = () => {
               </p>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
-                <span style={{ color: "black", fontSize: "0.9rem" }}>❤️ {blog.likes.length} likes</span>
+                <span style={{ color: "black", fontSize: "0.9rem" }}> {blog.likes.length} likes</span>
                 <span style={{ color: "black", fontSize: "0.9rem" }}>
-                  📅 {new Date(blog.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                   {new Date(blog.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                 </span>
 
                 <div>
@@ -180,7 +180,6 @@ const MyBlogs = () => {
                 </div>
               </div>
 
-              {/* Comments Section */}
               <h4 style={{ marginTop: "1rem", color: "#444" }}>Comments</h4>
               {blog.comments && blog.comments.length > 0 ? (
                 blog.comments.map((comment) => (

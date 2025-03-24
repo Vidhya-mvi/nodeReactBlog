@@ -1,24 +1,24 @@
 const Blog = require("../models/blog");
 
-
+//  Create a new blog with genre
 const createBlog = async (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, genre } = req.body;
 
   try {
-    console.log("Received data:", { title, content, file: req.file });
+    console.log("Received data:", { title, content, genre, file: req.file });
 
-    if (!title || !content) {
-      return res.status(400).json({ error: "Title and content are required" });
+    if (!title || !content || !genre) {
+      return res.status(400).json({ error: "Title, content, and genre are required" });
     }
 
     const image = req.file
-    ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
-    : "";
-  
+      ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+      : "";
 
     const newBlog = new Blog({
       title,
       content,
+      genre,
       image,
       postedBy: req.user.id,
     });
@@ -33,8 +33,7 @@ const createBlog = async (req, res) => {
   }
 };
 
-
-// 🔥 Get all blogs
+//  Get all blogs 
 const getBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find()
@@ -48,28 +47,24 @@ const getBlogs = async (req, res) => {
   }
 };
 
-
-const getUserBlogs = async (req, res) => {
+//  Get blogs by genre
+const getBlogsByGenre = async (req, res) => {
+  const { genre } = req.params;
   try {
-    const { userId } = req.params;
-    console.log("Backend received userId:", userId);
+    const blogs = await Blog.find({ genre })
+      .populate("postedBy", "username")
+      .sort({ createdAt: -1 });
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is missing" });
-    }
-
-    const blogs = await Blog.find({ postedBy: userId }).populate("postedBy", "username email");
-
-    if (!blogs.length) return res.status(404).json({ message: "No blogs found for this user" });
+    if (!blogs.length) return res.status(404).json({ message: "No blogs found for this genre" });
 
     res.status(200).json(blogs);
-  } catch (error) {
-    console.error("Error fetching user blogs:", error);
+  } catch (err) {
+    console.error("Error fetching genre blogs:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-
+//  Get a single blog by ID
 const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
@@ -86,16 +81,36 @@ const getBlogById = async (req, res) => {
 };
 
 
+const getUserBlogs = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("Backend received userId:", userId);
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is missing" });
+    }
+
+    const blogs = await Blog.find({ postedBy: userId })
+      .populate("postedBy", "username email");
+
+    if (!blogs.length) return res.status(404).json({ message: "No blogs found for this user" });
+
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.error("Error fetching user blogs:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//  Update blog
 const updateBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
-    const updatedData = { title, content };
+    const { title, content, genre } = req.body;
+    const updatedData = { title, content, genre };
 
-    // If a new image is uploaded, save the path
     if (req.file) {
       updatedData.image = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     }
-    
 
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 
@@ -108,14 +123,13 @@ const updateBlog = async (req, res) => {
   }
 };
 
-// 🗑️ Delete a blog post (only author or admin)
+//  Delete a blog
 const deleteBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
 
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    // Check if the user is the author or an admin
     if (blog.postedBy.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to delete this blog" });
     }
@@ -127,14 +141,12 @@ const deleteBlog = async (req, res) => {
   }
 };
 
-
-
-// ❤️ Like a blog post
+//  Like a blog post
 const likeBlog = async (req, res) => {
   try {
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
-      { $addToSet: { likes: req.user.id } }, // Add user ID if not already present
+      { $addToSet: { likes: req.user.id } },
       { new: true }
     );
     res.json(blog);
@@ -143,12 +155,12 @@ const likeBlog = async (req, res) => {
   }
 };
 
-// 💔 Unlike a blog post
+//  Unlike a blog post
 const unlikeBlog = async (req, res) => {
   try {
     const blog = await Blog.findByIdAndUpdate(
       req.params.id,
-      { $pull: { likes: req.user.id } }, // Remove user ID if present
+      { $pull: { likes: req.user.id } },
       { new: true }
     );
     res.json(blog);
@@ -157,7 +169,7 @@ const unlikeBlog = async (req, res) => {
   }
 };
 
-// 💬 Add a comment to a blog post
+//  Add a comment
 const addComment = async (req, res) => {
   const { text } = req.body;
 
@@ -178,7 +190,7 @@ const addComment = async (req, res) => {
   }
 };
 
-// ✂️ Delete a comment (only comment author or admin)
+//  Delete a comment
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
 
@@ -189,7 +201,6 @@ const deleteComment = async (req, res) => {
 
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-    // Check if the user is the comment author or an admin
     if (comment.postedBy.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to delete this comment" });
     }
@@ -214,4 +225,5 @@ module.exports = {
   addComment,
   deleteComment,
   getUserBlogs,
+  getBlogsByGenre, 
 };
