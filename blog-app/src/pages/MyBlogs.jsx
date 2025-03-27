@@ -37,7 +37,8 @@ const MyBlogs = () => {
         }
       } catch (err) {
         console.error(" Error fetching user blogs:", err.response?.data || err.message);
-        setError("Failed to load blogs. Please try again.");
+        setError("Looks like you haven't written any blogs yet — start your first one now!");
+
       } finally {
         setLoading(false);
       }

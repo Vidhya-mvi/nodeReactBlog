@@ -31,8 +31,8 @@ const EditBlog = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [originalTitle, setOriginalTitle] = useState("");
-  const [originalContent, setOriginalContent] = useState("");
+  // const [originalTitle, setOriginalTitle] = useState("");
+  // const [originalContent, setOriginalContent] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(true);
@@ -50,8 +50,8 @@ const EditBlog = () => {
 
         setTitle(res.data.title);
         setContent(res.data.content);
-        setOriginalTitle(res.data.title);
-        setOriginalContent(res.data.content);
+        // setOriginalTitle(res.data.title);
+        // setOriginalContent(res.data.content);
 
         if (res.data.image) {
           setPreview(`http://localhost:5000${res.data.image}`);
@@ -79,32 +79,33 @@ const EditBlog = () => {
   };
 
  
-  const handleReset = () => {
-    setTitle(originalTitle);
-    setContent(originalContent);
-    setImage(null);
-    setPreview(preview);
-  };
+
 
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     setUpdating(true);
-
+  
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
     if (image) formData.append("image", image);
-
+  
     try {
       console.log(" Updating blog...");
-
-      await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
+  
+      const res = await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+  
       alert(" Blog updated successfully!");
+  
+      // ✅ Update preview with new image from response
+      if (res.data.image) {
+        setPreview(`http://localhost:5000${res.data.image}`);
+      }
+  
       navigate("/");
     } catch (err) {
       console.error(" Failed to update blog:", err);
@@ -113,6 +114,7 @@ const EditBlog = () => {
       setUpdating(false);
     }
   };
+  
 
   const handleCancel = () => navigate("/");
 
@@ -132,7 +134,7 @@ const EditBlog = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          style={{ width: "100%", marginBottom: "10px", color: "black" }}
+          style={{ width: "100%", marginBottom: "10px", color: "white" }}
         />
 
         <textarea
@@ -141,7 +143,7 @@ const EditBlog = () => {
           onChange={(e) => setContent(e.target.value)}
           rows="10"
           required
-          style={{ width: "100%", marginBottom: "10px", color: "black" }}
+          style={{ width: "100%", marginBottom: "10px", color: "white" }}
         />
 
         <input
@@ -183,21 +185,6 @@ const EditBlog = () => {
             disabled={updating}
           >
             {updating ? "Updating..." : "Update Blog"}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleReset}
-            style={{
-              cursor: "pointer",
-              padding: "10px 20px",
-              backgroundColor: "#FFA500",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-            }}
-          >
-            Undo Changes
           </button>
 
         

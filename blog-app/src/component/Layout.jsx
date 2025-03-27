@@ -120,9 +120,7 @@ const Layout = ({ children }) => {
               <Link to="/create" style={{ color: "#fff", textDecoration: "none" }}>
                 Create Blog
               </Link>
-              <Link to="/profile" style={{ color: "#fff", textDecoration: "none" }}>
-                Profile
-              </Link>
+            
               {isAdmin && (
                 <Link
                   to="/admin"

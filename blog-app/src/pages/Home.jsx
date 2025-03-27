@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
+
 
 const Home = () => {
   const [blogs, setBlogs] = useState([]);
@@ -24,23 +27,34 @@ const Home = () => {
 
   const handleLike = async (id) => {
     if (!user) return alert("Please log in to like blogs!");
+  
     try {
+      const blog = blogs.find((b) => b._id === id);
+      const hasLiked = blog.likes.includes(user._id);
+  
       await axios.put(
         `http://localhost:5000/api/blogs/like/${id}`,
         {},
         { withCredentials: true }
       );
+  
       setBlogs((prev) =>
-        prev.map((blog) =>
-          blog._id === id
-            ? { ...blog, likes: [...blog.likes, user._id] }
-            : blog
+        prev.map((b) =>
+          b._id === id
+            ? {
+                ...b,
+                likes: hasLiked
+                  ? b.likes.filter((like) => like !== user._id) // Unlike
+                  : [...b.likes, user._id], // Like
+              }
+            : b
         )
       );
     } catch (err) {
-      console.error("Failed to like blog:", err);
+      console.error("Failed to like/unlike blog:", err);
     }
   };
+  
 
   const handleInputChange = (id, value) => {
     setCommentText((prev) => ({ ...prev, [id]: value }));
@@ -112,7 +126,7 @@ const Home = () => {
               flexDirection: "column",
             }}
             onClick={() => navigate(`/blogs/${blog._id}`)}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             {blog.image && (
@@ -166,24 +180,25 @@ const Home = () => {
               </p>
 
               {user ? (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLike(blog._id);
-                  }}
-                  style={{
-                    backgroundColor: "#4CAF50",
-                    color: "#fff",
-                    border: "none",
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                    borderRadius: "5px",
-                    fontWeight: "bold",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  Like
-                </button>
+             <button
+             onClick={(e) => {
+               e.stopPropagation();
+               handleLike(blog._id);
+             }}
+             style={{
+               backgroundColor: blog.likes.includes(user._id) ? "#e74c3c" : "#4CAF50", // Red for unlike, Green for like
+               color: "#fff",
+               border: "none",
+               padding: "5px 10px",
+               cursor: "pointer",
+               borderRadius: "5px",
+               fontWeight: "bold",
+               fontSize: "0.8rem",
+             }}
+           >
+             {blog.likes.includes(user._id) ? "Unlike" : "Like"}
+           </button>
+           
               ) : (
                 <p style={{ color: "gray", fontSize: "0.8rem" }}>Log in to like</p>
               )}
@@ -204,24 +219,26 @@ const Home = () => {
                       fontSize: "0.8rem",
                     }}
                   />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleComment(blog._id);
-                    }}
-                    style={{
-                      padding: "5px 7px",
-                      borderRadius: "5px",
-                      border: "none",
-                      backgroundColor: "#3498db",
-                      color: "#fff",
-                      fontWeight: "bold",
-                      fontSize: "0.8rem",
-                      cursor: "pointer",
-                    }}
-                  >
-                    ()
-                  </button>
+                <button
+  onClick={(e) => {
+    e.stopPropagation();
+    handleComment(blog._id);
+  }}
+  style={{
+    padding: "5px",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#3498db",
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: "0.8rem",
+    cursor: "pointer",
+  }}
+  title="Add Comment"
+>
+  <FontAwesomeIcon icon={faCommentDots} />
+</button>
+
                 </div>
               )}
 
