@@ -27,26 +27,26 @@ const Home = () => {
 
   const handleLike = async (id) => {
     if (!user) return alert("Please log in to like blogs!");
-  
+
     try {
       const blog = blogs.find((b) => b._id === id);
       const hasLiked = blog.likes.includes(user._id);
-  
+
       await axios.put(
         `http://localhost:5000/api/blogs/like/${id}`,
         {},
         { withCredentials: true }
       );
-  
+
       setBlogs((prev) =>
         prev.map((b) =>
           b._id === id
             ? {
-                ...b,
-                likes: hasLiked
-                  ? b.likes.filter((like) => like !== user._id) // Unlike
-                  : [...b.likes, user._id], // Like
-              }
+              ...b,
+              likes: hasLiked
+                ? b.likes.filter((like) => like !== user._id) // Unlike
+                : [...b.likes, user._id], // Like
+            }
             : b
         )
       );
@@ -54,7 +54,7 @@ const Home = () => {
       console.error("Failed to like/unlike blog:", err);
     }
   };
-  
+
 
   const handleInputChange = (id, value) => {
     setCommentText((prev) => ({ ...prev, [id]: value }));
@@ -101,16 +101,16 @@ const Home = () => {
       <h1 style={{ color: "black" }}>Latest Blogs</h1>
 
       <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)", 
-    gap: "15px",
-    maxHeight: "80vh", 
-    overflowY: "auto", 
-    scrollBehavior: "smooth", 
-    paddingRight: "10px", 
-  }}
->
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "15px",
+          maxHeight: "80vh",
+          overflowY: "auto",
+          scrollBehavior: "smooth",
+          paddingRight: "10px",
+        }}
+      >
 
         {blogs.map((blog) => (
           <div
@@ -135,7 +135,7 @@ const Home = () => {
                 alt={blog.title}
                 style={{
                   width: "100%",
-                  height:"600px",
+                  height: "600px",
                   objectFit: "cover",
                   backgroundColor: "#f0f0f0",
                 }}
@@ -174,31 +174,31 @@ const Home = () => {
                 By: <strong>{blog.postedBy?.username}</strong> |  {blog.likes.length} Likes
               </p>
 
-            
+
               <p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
                 Genre: {blog.genre || "Unknown"}
               </p>
 
               {user ? (
-             <button
-             onClick={(e) => {
-               e.stopPropagation();
-               handleLike(blog._id);
-             }}
-             style={{
-               backgroundColor: blog.likes.includes(user._id) ? "#e74c3c" : "#4CAF50", // Red for unlike, Green for like
-               color: "#fff",
-               border: "none",
-               padding: "5px 10px",
-               cursor: "pointer",
-               borderRadius: "5px",
-               fontWeight: "bold",
-               fontSize: "0.8rem",
-             }}
-           >
-             {blog.likes.includes(user._id) ? "Unlike" : "Like"}
-           </button>
-           
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLike(blog._id);
+                  }}
+                  style={{
+                    backgroundColor: blog.likes.includes(user._id) ? "#e74c3c" : "#4CAF50", // Red for unlike, Green for like
+                    color: "#fff",
+                    border: "none",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                    borderRadius: "5px",
+                    fontWeight: "bold",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  {blog.likes.includes(user._id) ? "Unlike" : "Like"}
+                </button>
+
               ) : (
                 <p style={{ color: "gray", fontSize: "0.8rem" }}>Log in to like</p>
               )}
@@ -219,25 +219,25 @@ const Home = () => {
                       fontSize: "0.8rem",
                     }}
                   />
-                <button
-  onClick={(e) => {
-    e.stopPropagation();
-    handleComment(blog._id);
-  }}
-  style={{
-    padding: "5px",
-    borderRadius: "5px",
-    border: "none",
-    backgroundColor: "#3498db",
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: "0.8rem",
-    cursor: "pointer",
-  }}
-  title="Add Comment"
->
-  <FontAwesomeIcon icon={faCommentDots} />
-</button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleComment(blog._id);
+                    }}
+                    style={{
+                      padding: "5px",
+                      borderRadius: "5px",
+                      border: "none",
+                      backgroundColor: "#3498db",
+                      color: "#fff",
+                      fontWeight: "bold",
+                      fontSize: "0.8rem",
+                      cursor: "pointer",
+                    }}
+                    title="Add Comment"
+                  >
+                    <FontAwesomeIcon icon={faCommentDots} />
+                  </button>
 
                 </div>
               )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import SearchBar from "./Searchbar";
 
 const Layout = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -32,7 +33,7 @@ const Layout = ({ children }) => {
     navigate(`/genre/${formattedGenre}`);
     setShowGenres(false);
   };
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -63,6 +64,7 @@ const Layout = ({ children }) => {
           boxSizing: "border-box",
         }}
       >
+        {/* Genre Dropdown */}
         <div
           style={{ cursor: "pointer", fontSize: "1.8rem", padding: "0 10px" }}
           onClick={() => setShowGenres(!showGenres)}
@@ -105,12 +107,26 @@ const Layout = ({ children }) => {
           ))}
         </div>
 
-        <div style={{ fontSize: "1.5rem", fontWeight: "bold", flexGrow: 1, textAlign: "center" }}>
+        {/* Blog Title */}
+        <div
+          style={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            flexGrow: 1,
+            textAlign: "center",
+          }}
+        >
           <Link to="/" style={{ color: "#fff", textDecoration: "none" }}>
             Blogify
           </Link>
         </div>
 
+        {/* Search Bar */}
+        <div style={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+          <SearchBar />
+        </div>
+
+        {/* Navigation Links */}
         <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
           {user ? (
             <>
@@ -120,7 +136,7 @@ const Layout = ({ children }) => {
               <Link to="/create" style={{ color: "#fff", textDecoration: "none" }}>
                 Create Blog
               </Link>
-            
+
               {isAdmin && (
                 <Link
                   to="/admin"
@@ -141,6 +157,7 @@ const Layout = ({ children }) => {
             </>
           )}
 
+          {/* Logout Button */}
           {user && (
             <button
               onClick={handleLogout}

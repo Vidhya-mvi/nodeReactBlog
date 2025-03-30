@@ -15,7 +15,7 @@ const Register = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); 
+    setError("");
   };
 
   const validateForm = () => {
@@ -55,7 +55,7 @@ const Register = () => {
       style={{
         height: "100vh",
         width: "100vw",
-        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)", 
+        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -132,7 +132,7 @@ const Register = () => {
             style={{
               width: "100%",
               padding: "12px",
-              backgroundColor: loading ? "#aaa" : "#6a0572", 
+              backgroundColor: loading ? "#aaa" : "#6a0572",
               color: "#fff",
               border: "none",
               borderRadius: "5px",

@@ -227,6 +227,50 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+
+const searchBlogs = async (req, res) => {
+  try {
+    console.log("Received query:", req.query);
+
+    let { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    query = query.trim();
+    const escapeRegExp = (text) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const safeQuery = escapeRegExp(query);
+
+    const blogs = await Blog.find({
+      $or: [
+        { title: { $regex: safeQuery, $options: "i" } },
+        { content: { $regex: safeQuery, $options: "i" } },
+        { genre: { $regex: safeQuery, $options: "i" } },
+      ],
+    }).populate("postedBy", "username");
+
+    console.log(`✅ ${blogs.length} blogs found for query: "${query}"`);
+
+    if (!blogs.length) {
+      return res.status(404).json({ message: "No matching blogs found" });
+    }
+
+    res.json(blogs);
+  } catch (error) {
+    console.error("❌ Error searching blogs:", error);
+
+    if (error.name === "MongoNetworkError") {
+      return res.status(503).json({ message: "Database connection error" });
+    }
+
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+
+
 module.exports = {
   createBlog,
   getBlogs,
@@ -239,5 +283,6 @@ module.exports = {
   deleteComment,
   getUserBlogs,
   getBlogsByGenre, 
-  getAllUsers
+  getAllUsers,
+  searchBlogs
 };

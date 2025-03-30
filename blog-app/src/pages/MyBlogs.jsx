@@ -63,7 +63,7 @@ const MyBlogs = () => {
     } catch (error) {
       console.error(" Error deleting blog:", error.response?.data || error.message);
       alert(`Failed to delete blog: ${error.response?.data?.message || error.message}`);
-      setBlogs(originalBlogs); 
+      setBlogs(originalBlogs);
     }
   };
 
@@ -130,7 +130,7 @@ const MyBlogs = () => {
                   alt={blog.title}
                   style={{
                     width: "100%",
-                    height:"700px",
+                    height: "700px",
                     objectFit: "cover",
                     borderRadius: "12px",
                     marginBottom: "0.5rem",
@@ -139,7 +139,7 @@ const MyBlogs = () => {
                 />
               )}
 
-<p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
+              <p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
                 Genre: {blog.genre || "Unknown"}
               </p>
               <h3 style={{ fontSize: "1.4rem", fontWeight: "600", color: "black", marginBottom: "0.5rem" }}>{blog.title}</h3>
@@ -151,7 +151,7 @@ const MyBlogs = () => {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
                 <span style={{ color: "black", fontSize: "0.9rem" }}> {blog.likes.length} likes</span>
                 <span style={{ color: "black", fontSize: "0.9rem" }}>
-                   {new Date(blog.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                  {new Date(blog.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                 </span>
 
                 <div>

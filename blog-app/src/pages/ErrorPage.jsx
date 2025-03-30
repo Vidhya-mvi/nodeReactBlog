@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const ErrorPage = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   return (
     <div style={styles.container}>
@@ -23,7 +23,7 @@ const ErrorPage = () => {
 const styles = {
   container: {
     height: "100vh",
-    width:"100%",
+    width: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",

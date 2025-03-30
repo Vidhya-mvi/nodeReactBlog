@@ -11,7 +11,8 @@ const GenreBlogs = () => {
   useEffect(() => {
     const fetchBlogsByGenre = async () => {
       try {
-        const { data } = await axios.get(`/api/blogs/genre/${genre}`);
+        const { data } = await axios.get(`http://localhost:5000/api/blogs/genre/${genre}`);
+
         console.log("API response:", data);
         setBlogs(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -55,7 +56,7 @@ const GenreBlogs = () => {
         ))
       ) : (
         <h3 style={styles.noBlogs}>
-          No blogs found for this genre. Be the first to write one! 
+          No blogs found for this genre. Be the first to write one!
         </h3>
       )}
     </div>

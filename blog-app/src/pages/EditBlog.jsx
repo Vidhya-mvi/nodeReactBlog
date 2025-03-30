@@ -31,15 +31,14 @@ const EditBlog = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  // const [originalTitle, setOriginalTitle] = useState("");
-  // const [originalContent, setOriginalContent] = useState("");
+
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState("");
 
-  
+
   useEffect(() => {
     const fetchBlog = async () => {
       try {
@@ -50,8 +49,7 @@ const EditBlog = () => {
 
         setTitle(res.data.title);
         setContent(res.data.content);
-        // setOriginalTitle(res.data.title);
-        // setOriginalContent(res.data.content);
+
 
         if (res.data.image) {
           setPreview(`http://localhost:5000${res.data.image}`);
@@ -69,7 +67,7 @@ const EditBlog = () => {
     fetchBlog();
   }, [id]);
 
- 
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -78,34 +76,34 @@ const EditBlog = () => {
     }
   };
 
- 
+
 
 
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     setUpdating(true);
-  
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
     if (image) formData.append("image", image);
-  
+
     try {
       console.log(" Updating blog...");
-  
+
       const res = await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+
       alert(" Blog updated successfully!");
-  
-      // ✅ Update preview with new image from response
+
+
       if (res.data.image) {
         setPreview(`http://localhost:5000${res.data.image}`);
       }
-  
+
       navigate("/");
     } catch (err) {
       console.error(" Failed to update blog:", err);
@@ -114,7 +112,7 @@ const EditBlog = () => {
       setUpdating(false);
     }
   };
-  
+
 
   const handleCancel = () => navigate("/");
 
@@ -122,7 +120,7 @@ const EditBlog = () => {
   if (loading) return <Spinner />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
-  
+
   return (
     <div style={{ padding: "20px" }}>
       <h1 style={{ color: "black" }}>Edit Blog</h1>
@@ -170,7 +168,7 @@ const EditBlog = () => {
           </div>
         )}
 
-       
+
         <div style={{ display: "flex", gap: "10px" }}>
           <button
             type="submit"
@@ -187,7 +185,7 @@ const EditBlog = () => {
             {updating ? "Updating..." : "Update Blog"}
           </button>
 
-        
+
           <button
             type="button"
             onClick={handleCancel}

@@ -10,7 +10,7 @@ const CreateBlog = () => {
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState(""); 
+  const [alertType, setAlertType] = useState("");
   const navigate = useNavigate();
 
   const genres = [
@@ -25,7 +25,7 @@ const CreateBlog = () => {
     "Manhwa",
   ];
 
-  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -60,21 +60,21 @@ const CreateBlog = () => {
         }
       );
 
-     
+
       setAlertMessage(" Blog created successfully!");
       setAlertType("success");
 
-     
+
       setTimeout(() => setAlertMessage(""), 3000);
 
-     
+
       navigate(`/blogs/${res.data._id}`);
     } catch (err) {
-     
+
       setAlertMessage(err.response?.data?.message || " Failed to create blog");
       setAlertType("error");
 
-    
+
       setTimeout(() => setAlertMessage(""), 3000);
 
       console.error("Failed to create blog:", err);
@@ -85,7 +85,7 @@ const CreateBlog = () => {
     <div style={styles.container}>
       <h1 style={styles.heading}>Create a New Blog</h1>
 
-     
+
       {alertMessage && (
         <div
           style={{

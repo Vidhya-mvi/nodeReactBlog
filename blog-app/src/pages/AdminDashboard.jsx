@@ -6,7 +6,7 @@ const AdminDashboard = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [deleteBlogId, setDeleteBlogId] = useState(null); 
+  const [deleteBlogId, setDeleteBlogId] = useState(null);
 
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   }, []);
 
   const confirmDeleteBlog = (blogId) => {
-    setDeleteBlogId(blogId); 
+    setDeleteBlogId(blogId);
   };
 
   const handleDeleteBlog = async () => {
@@ -42,7 +42,7 @@ const AdminDashboard = () => {
         withCredentials: true,
       });
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== deleteBlogId));
-      setDeleteBlogId(null); 
+      setDeleteBlogId(null);
     } catch (err) {
       console.error("Failed to delete blog:", err);
       setError("Failed to delete the blog. Try again.");
@@ -188,7 +188,7 @@ const styles = {
     borderRadius: "8px",
     boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
     textAlign: "center",
-    color:"black"
+    color: "black"
   },
   modalButtons: {
     display: "flex",

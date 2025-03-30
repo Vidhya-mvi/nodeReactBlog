@@ -13,45 +13,45 @@ const Login = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); 
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     try {
       console.log(" Sending login data:", formData);
-  
+
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         formData,
         { withCredentials: true }
       );
-  
+
       console.log(" Login successful:", res.data);
-  
+
       const { user, token } = res.data;
-  
+
       if (token) {
         localStorage.setItem("token", token);
         console.log(" Token saved:", token);
       } else {
         console.warn(" Token missing in response");
       }
-  
+
       localStorage.setItem("user", JSON.stringify(user));
       console.log("User saved:", localStorage.getItem("user"));
-  
+
       if (user.role === "admin") {
-        navigate("/admin"); 
+        navigate("/admin");
       } else {
-        navigate("/"); 
+        navigate("/");
       }
     } catch (err) {
       console.error(" Login failed:", err.response?.data || err.message);
-  
+
       setError(
         err.response?.data?.message || "Login failed. Please check your credentials."
       );
@@ -59,13 +59,13 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <div
       style={{
         height: "100vh",
         width: "100vw",
-        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)", 
+        background: "linear-gradient(to right, #a1c4fd, #c2e9fb)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -126,7 +126,7 @@ const Login = () => {
             style={{
               width: "100%",
               padding: "12px",
-              backgroundColor: loading ? "#aaa" : "#6a0572", 
+              backgroundColor: loading ? "#aaa" : "#6a0572",
               color: "#fff",
               border: "none",
               borderRadius: "5px",

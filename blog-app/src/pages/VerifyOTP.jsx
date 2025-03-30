@@ -75,7 +75,7 @@ const OtpVerification = () => {
               border: "1px solid #f5c6cb",
             }}
           >
-             {error}
+            {error}
           </div>
         )}
 
@@ -90,7 +90,7 @@ const OtpVerification = () => {
               border: "1px solid #c3e6cb",
             }}
           >
-             {success}
+            {success}
           </div>
         )}
 
