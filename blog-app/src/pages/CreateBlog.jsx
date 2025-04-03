@@ -11,36 +11,39 @@ const CreateBlog = () => {
   const [error, setError] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const genres = [
-    "Technology",
-    "Health",
-    "Lifestyle",
-    "Finance",
-    "Education",
-    "Anime",
-    "Books",
-    "Art",
-    "Manhwa",
-  ];
-
+  const genres = ["Technology", "Health", "Lifestyle", "Finance", "Education", "Anime", "Books", "Art", "Manhwa"];
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Only image files are allowed");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        setError("File size must be under 2MB");
+        return;
+      }
+      setError("");
       setImage(file);
       setPreview(URL.createObjectURL(file));
     }
   };
 
+  const dismissAlert = () => setAlertMessage("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
     setError("");
 
     if (!genre) {
       setError("Please select a genre");
+      setLoading(false);
       return;
     }
 
@@ -51,41 +54,37 @@ const CreateBlog = () => {
     if (image) formData.append("image", image);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/blogs",
-        formData,
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios.post("http://localhost:5000/api/blogs", formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-
-      setAlertMessage(" Blog created successfully!");
+      setAlertMessage("Blog created successfully!");
       setAlertType("success");
 
+      setTimeout(dismissAlert, 3000);
 
-      setTimeout(() => setAlertMessage(""), 3000);
-
+      // Reset form
+      setTitle("");
+      setContent("");
+      setGenre("");
+      setImage(null);
+      setPreview(null);
 
       navigate(`/blogs/${res.data._id}`);
     } catch (err) {
-
-      setAlertMessage(err.response?.data?.message || " Failed to create blog");
+      setAlertMessage(err.response?.data?.message || "Failed to create blog");
       setAlertType("error");
 
-
-      setTimeout(() => setAlertMessage(""), 3000);
-
+      setTimeout(dismissAlert, 3000);
       console.error("Failed to create blog:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Create a New Blog</h1>
-
-
       {alertMessage && (
         <div
           style={{
@@ -94,80 +93,77 @@ const CreateBlog = () => {
           }}
         >
           {alertMessage}
+          <button onClick={dismissAlert} style={styles.closeButton}>✖</button>
         </div>
       )}
 
       {error && <p style={styles.error}>{error}</p>}
 
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          type="text"
-          placeholder="Blog Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          style={styles.input}
-        />
+      <div style={styles.wrapper}>
+        {/* Left: Form */}
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <h1 style={styles.heading}>Create a New Blog</h1>
 
-        <textarea
-          placeholder="Blog Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows="10"
-          required
-          style={styles.textarea}
-        />
-        <p style={{ color: "#555", fontSize: "0.8rem" }}>
-          {content.length}/1000 characters
-        </p>
+          <input type="text" placeholder="Blog Title" value={title} onChange={(e) => setTitle(e.target.value)} required style={styles.input} />
 
-        <select
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
-          required
-          style={styles.select}
-        >
-          <option value="" disabled>
-            Select a Genre
-          </option>
-          {genres.map((g, index) => (
-            <option key={index} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
+          <textarea placeholder="Blog Content" value={content} onChange={(e) => setContent(e.target.value)} rows="10" required style={styles.textarea} />
+          <p style={{ color: "#555", fontSize: "0.8rem" }}>{content.length}/1000 characters</p>
 
-        <input type="file" onChange={handleImageChange} style={styles.fileInput} />
+          <select value={genre} onChange={(e) => setGenre(e.target.value)} required style={styles.select}>
+            <option value="" disabled>Select a Genre</option>
+            {genres.map((g, index) => (
+              <option key={index} value={g}>{g}</option>
+            ))}
+          </select>
 
-        {preview && (
-          <div style={styles.previewContainer}>
-            <h4 style={{ color: "#333" }}>Image Preview:</h4>
-            <img src={preview} alt="Preview" style={styles.previewImage} />
+          <input type="file" onChange={handleImageChange} style={styles.fileInput} />
+
+          <button type="submit" style={styles.button} disabled={!title || !content || !genre || loading}>
+            {loading ? "Creating..." : "Create Blog"}
+          </button>
+        </form>
+
+        {/* Right: Live Preview */}
+        <div style={styles.previewContainer}>
+          <h2 style={styles.previewTitle}>Live Preview</h2>
+          <div style={styles.blogCard}>
+            {preview && <img src={preview} alt="Preview" style={styles.blogImage} />}
+            <div style={styles.blogContent}>
+              <h3 style={styles.blogTitle}>{title || "Blog Title"}</h3>
+              <p style={styles.blogText}>{content ? content.slice(0, 100) + "..." : "Blog content preview..."}</p>
+              <span style={styles.blogGenre}>{genre || "Genre"}</span>
+            </div>
           </div>
-        )}
-
-        <button type="submit" style={styles.button}>
-          Create Blog
-        </button>
-      </form>
+        </div>
+      </div>
     </div>
   );
 };
 
-
+// Styles
 const styles = {
   container: {
     padding: "20px",
-    maxWidth: "600px",
+    maxWidth: "1000px",
     margin: "0 auto",
     backgroundColor: "#f4f4f4",
     borderRadius: "8px",
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    textAlign: "center",
+  },
+  wrapper: {
+    display: "flex",
+    gap: "20px",
+    justifyContent: "space-between",
+  },
+  form: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
   heading: {
     color: "#333",
-    marginBottom: "20px",
+    marginBottom: "10px",
   },
   error: {
     color: "red",
@@ -184,63 +180,33 @@ const styles = {
     fontWeight: "bold",
     boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
     zIndex: 1000,
-    animation: "fadein 0.5s, fadeout 0.5s 2.5s",
   },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  input: {
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    fontSize: "16px",
-  },
-  textarea: {
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    fontSize: "16px",
-    resize: "none",
-  },
-  select: {
-    padding: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    fontSize: "16px",
+  closeButton: {
+    marginLeft: "10px",
     cursor: "pointer",
-    backgroundColor: "#fff",
-    color: "#333",
-  },
-  fileInput: {
     border: "none",
-  },
-  button: {
-    backgroundColor: "#4CAF50",
+    background: "transparent",
     color: "#fff",
-    padding: "10px 15px",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    fontWeight: "bold",
-    transition: "background 0.2s",
+    fontSize: "16px",
   },
+  input: { padding: "10px", borderRadius: "5px", border: "1px solid #ddd" },
+  textarea: { padding: "10px", borderRadius: "5px", border: "1px solid #ddd", resize: "none" },
+  select: { padding: "10px", borderRadius: "5px", border: "1px solid #ddd" },
+  fileInput: { border: "none" },
+  button: { backgroundColor: "#4CAF50", color: "#fff", padding: "10px", borderRadius: "5px", border: "none", cursor: "pointer" },
   previewContainer: {
-    marginTop: "15px",
-    padding: "10px",
+    flex: 1,
     backgroundColor: "#fff",
+    padding: "10px",
     borderRadius: "5px",
     boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
   },
-  previewImage: {
-    width: "100%",
-    height: "auto",
-    maxHeight: "300px",
-    borderRadius: "5px",
-    objectFit: "cover",
-    marginTop: "5px",
-  },
+  previewTitle: { textAlign: "center", color: "#333" },
+  blogCard: { display: "flex", flexDirection: "column", alignItems: "center", padding: "10px" },
+  blogImage: { width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "5px" },
+  blogTitle: { color: "#333" },
+  blogText: { color: "#666", fontSize: "14px" },
+  blogGenre: { fontWeight: "bold", fontSize: "12px", color: "#888" },
 };
 
 export default CreateBlog;

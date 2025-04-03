@@ -6,8 +6,7 @@ const {
   getBlogById,
   updateBlog,
   deleteBlog,
-  likeBlog,
-  unlikeBlog,
+  toggleLikeBlog,
   addComment,
   deleteComment,
   getUserBlogs,
@@ -25,8 +24,7 @@ router.get("/blogs/search", searchBlogs);
 router.get("/blogs/:id", getBlogById);
 router.put("/blogs/:id", upload.single("image"), updateBlog);
 router.delete("/blogs/:id", authMiddleware, deleteBlog);
-router.put("/blogs/like/:id", authMiddleware, likeBlog);
-router.put("/blogs/unlike/:id", authMiddleware, unlikeBlog);
+router.put("/blogs/like/:id", authMiddleware, toggleLikeBlog);
 router.post("/blogs/comment/:id", authMiddleware, addComment);
 router.delete("/blogs/comment/:id/:commentId", authMiddleware, deleteComment);
 

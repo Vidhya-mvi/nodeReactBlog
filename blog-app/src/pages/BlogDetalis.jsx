@@ -178,19 +178,27 @@ const BlogDetails = () => {
 
         <button
           onClick={handleLike}
+          disabled={!user}
           style={{
             marginTop: "10px",
             padding: "8px 12px",
-            backgroundColor: blog.likes.includes(user?._id) ? "#e74c3c" : "#3498db",
+            backgroundColor: user
+              ? blog.likes.includes(user?._id)
+                ? "#e74c3c"
+                : "#3498db"
+              : "#ccc",
             color: "#fff",
             border: "none",
             borderRadius: "5px",
-            cursor: "pointer",
+            cursor: user ? "pointer" : "not-allowed",
             fontWeight: "bold",
+            opacity: user ? "1" : "0.6",
           }}
         >
-          {blog.likes.includes(user?._id) ? " Liked" : " Like"} ({blog.likes.length})
+          {user ? (blog.likes.includes(user?._id) ? "Liked" : "Like") : " Like"}
+          ({blog.likes.length})
         </button>
+
 
         <button
           onClick={handleShare}

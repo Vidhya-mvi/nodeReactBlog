@@ -143,33 +143,45 @@ const deleteBlog = async (req, res) => {
   }
 };
 
-//  Like a blog post
-const likeBlog = async (req, res) => {
+
+
+const toggleLikeBlog = async (req, res) => {
   try {
-    const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { likes: req.user.id } },
-      { new: true }
-    );
-    res.json(blog);
+    console.log("Request received to like/unlike blog", req.params.id);
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: "Unauthorized: No user ID found" });
+    }
+
+    const userId = req.user.id;
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+
+    const hasLiked = blog.likes.map(id => id.toString()).includes(userId);
+    console.log("Has liked before?", hasLiked);
+
+    const updateQuery = hasLiked
+      ? { $pull: { likes: userId } }
+      : { $addToSet: { likes: userId } };
+
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updateQuery, { new: true });
+
+    console.log("Updated likes:", updatedBlog.likes);
+
+    res.json({
+      message: hasLiked ? "Unliked the blog" : "Liked the blog",
+      likes: updatedBlog.likes,
+    });
   } catch (err) {
-    res.status(500).json({ error: "Failed to like the blog" });
+    console.error("Error toggling like:", err);
+    res.status(500).json({ error: "Failed to like/unlike the blog" });
   }
 };
 
-//  Unlike a blog post
-const unlikeBlog = async (req, res) => {
-  try {
-    const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { $pull: { likes: req.user.id } },
-      { new: true }
-    );
-    res.json(blog);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to unlike the blog" });
-  }
-};
+
 
 //  Add a comment
 const addComment = async (req, res) => {
@@ -219,7 +231,7 @@ const deleteComment = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select("-password"); // Exclude passwords for safety
+    const users = await User.find({}).select("-password"); 
     res.status(200).json(users);
   } catch (err) {
     console.error("Failed to fetch users:", err);
@@ -245,12 +257,12 @@ const searchBlogs = async (req, res) => {
     const blogs = await Blog.find({
       $or: [
         { title: { $regex: safeQuery, $options: "i" } },
-        { content: { $regex: safeQuery, $options: "i" } },
+        
         { genre: { $regex: safeQuery, $options: "i" } },
       ],
     }).populate("postedBy", "username");
 
-    console.log(`✅ ${blogs.length} blogs found for query: "${query}"`);
+    console.log(` ${blogs.length} blogs found for query: "${query}"`);
 
     if (!blogs.length) {
       return res.status(404).json({ message: "No matching blogs found" });
@@ -258,7 +270,7 @@ const searchBlogs = async (req, res) => {
 
     res.json(blogs);
   } catch (error) {
-    console.error("❌ Error searching blogs:", error);
+    console.error(" Error searching blogs:", error);
 
     if (error.name === "MongoNetworkError") {
       return res.status(503).json({ message: "Database connection error" });
@@ -277,8 +289,7 @@ module.exports = {
   getBlogById,
   updateBlog,
   deleteBlog,
-  likeBlog,
-  unlikeBlog,
+  toggleLikeBlog,
   addComment,
   deleteComment,
   getUserBlogs,

@@ -2,208 +2,231 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
-
-const Spinner = () => (
-  <div style={{ textAlign: "center", padding: "20px" }}>
-    <div className="spinner" />
-    <p>Loading...</p>
-    <style>
-      {`
-        .spinner {
-          border: 4px solid rgba(0, 0, 0, 0.1);
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          border-left-color: #4CAF50;
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}
-    </style>
-  </div>
-);
-
 const EditBlog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
+  const [genre, setGenre] = useState("");
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const genres = ["Technology", "Health", "Lifestyle", "Finance", "Education", "Anime", "Books", "Art", "Manhwa"];
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        console.log(`🔍 Fetching blog data for ID: ${id}`);
         const res = await axios.get(`http://localhost:5000/api/blogs/${id}`, {
           withCredentials: true,
         });
 
         setTitle(res.data.title);
         setContent(res.data.content);
-
+        setGenre(res.data.genre || "");
 
         if (res.data.image) {
           setPreview(`http://localhost:5000${res.data.image}`);
+        }}catch (err) {
+          console.error("❌ Failed to fetch blog:", err.response || err.message);
+          setError(err.response?.data?.message || "Failed to load blog. Please try again.");
         }
-
-        console.log(" Blog data fetched:", res.data);
-      } catch (err) {
-        console.error(" Failed to fetch blog:", err);
-        setError("Failed to load blog. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+        
     };
 
     fetchBlog();
   }, [id]);
 
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Only image files are allowed");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        setError("File size must be under 2MB");
+        return;
+      }
+      setError("");
       setImage(file);
       setPreview(URL.createObjectURL(file));
     }
   };
 
-
-
-
+  const dismissAlert = () => setAlertMessage("");
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setUpdating(true);
+    if (loading) return;
+    setLoading(true);
+    setError("");
+
+    if (!genre) {
+      setError("Please select a genre");
+      setLoading(false);
+      return;
+    }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
+    formData.append("genre", genre);
     if (image) formData.append("image", image);
 
     try {
-      console.log(" Updating blog...");
-
-      const res = await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
+      await axios.put(`http://localhost:5000/api/blogs/${id}`, formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert(" Blog updated successfully!");
-
-
-      if (res.data.image) {
-        setPreview(`http://localhost:5000${res.data.image}`);
-      }
-
-      navigate("/");
+      setAlertMessage("Blog updated successfully!");
+      setAlertType("success");
+      setTimeout(dismissAlert, 3000);
+      navigate(`/blogs/${id}`);
     } catch (err) {
-      console.error(" Failed to update blog:", err);
-      alert("Failed to update blog.");
+      setAlertMessage(err.response?.data?.message || "Failed to update blog");
+      setAlertType("error");
+      setTimeout(dismissAlert, 3000);
     } finally {
-      setUpdating(false);
+      setLoading(false);
     }
   };
 
-
-  const handleCancel = () => navigate("/");
-
-
-  if (loading) return <Spinner />;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-
-
   return (
-    <div style={{ padding: "20px" }}>
-      <h1 style={{ color: "black" }}>Edit Blog</h1>
-
-      <form onSubmit={handleUpdate}>
-        <input
-          type="text"
-          placeholder="Blog Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          style={{ width: "100%", marginBottom: "10px", color: "white" }}
-        />
-
-        <textarea
-          placeholder="Blog Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows="10"
-          required
-          style={{ width: "100%", marginBottom: "10px", color: "white" }}
-        />
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          style={{ marginBottom: "10px", color: "black" }}
-        />
-
-        {preview && (
-          <div style={{ marginBottom: "10px" }}>
-            <p style={{ color: "black" }}>Image Preview:</p>
-            <img
-              src={preview}
-              alt="Blog preview"
-              style={{
-                width: "100%",
-                height: "300px",
-                objectFit: "cover",
-                borderRadius: "8px",
-                border: "1px solid #ddd",
-              }}
-            />
-          </div>
-        )}
-
-
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button
-            type="submit"
-            style={{
-              cursor: updating ? "wait" : "pointer",
-              padding: "10px 20px",
-              backgroundColor: updating ? "#ddd" : "#4CAF50",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-            }}
-            disabled={updating}
-          >
-            {updating ? "Updating..." : "Update Blog"}
-          </button>
-
-
-          <button
-            type="button"
-            onClick={handleCancel}
-            style={{
-              cursor: "pointer",
-              padding: "10px 20px",
-              backgroundColor: "#d9534f",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-            }}
-          >
-            Cancel
-          </button>
+    <div style={styles.container}>
+      {alertMessage && (
+        <div
+          style={{
+            ...styles.alert,
+            backgroundColor: alertType === "success" ? "#4CAF50" : "#FF4C4C",
+          }}
+        >
+          {alertMessage}
+          <button onClick={dismissAlert} style={styles.closeButton}>✖</button>
         </div>
-      </form>
+      )}
+
+      {error && <p style={styles.error}>{error}</p>}
+
+      <div style={styles.wrapper}>
+        {/* Left: Form */}
+        <form onSubmit={handleUpdate} style={styles.form}>
+          <h1 style={styles.heading}>Edit Blog</h1>
+
+          <input type="text" placeholder="Blog Title" value={title} onChange={(e) => setTitle(e.target.value)} required style={styles.input} />
+
+          <textarea
+            placeholder="Blog Content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={content.split("\n").length + 5}
+            required
+            style={styles.textarea}
+          />
+          <p style={{ color: "#555", fontSize: "0.8rem" }}>{content.length}/1000 characters</p>
+
+          <select value={genre} onChange={(e) => setGenre(e.target.value)} required style={styles.select}>
+            <option value="" disabled>Select a Genre</option>
+            {genres.map((g, index) => (
+              <option key={index} value={g}>{g}</option>
+            ))}
+          </select>
+
+          <input type="file" onChange={handleImageChange} style={styles.fileInput} />
+
+          <button type="submit" style={styles.button} disabled={!title || !content || !genre || loading}>
+            {loading ? "Updating..." : "Update Blog"}
+          </button>
+        </form>
+
+        {/* Right: Live Preview */}
+        <div style={styles.previewContainer}>
+          <h2 style={styles.previewTitle}>Live Preview</h2>
+          <div style={styles.blogCard}>
+            {preview && <img src={preview} alt="Preview" style={styles.blogImage} />}
+            <div style={styles.blogContent}>
+              <h3 style={styles.blogTitle}>{title || "Blog Title"}</h3>
+              <p style={styles.blogText}>{content ? content.slice(0, 100) + "..." : "Blog content preview..."}</p>
+              <span style={styles.blogGenre}>{genre || "Genre"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
+};
+
+// Styles
+const styles = {
+  container: {
+    padding: "20px",
+    maxWidth: "1000px",
+    margin: "0 auto",
+    backgroundColor: "#f4f4f4",
+    borderRadius: "8px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+  },
+  wrapper: {
+    display: "flex",
+    gap: "20px",
+    justifyContent: "space-between",
+  },
+  form: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  heading: {
+    color: "#333",
+    marginBottom: "10px",
+  },
+  error: {
+    color: "red",
+    marginBottom: "10px",
+  },
+  alert: {
+    position: "fixed",
+    top: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    color: "#fff",
+    fontWeight: "bold",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+    zIndex: 1000,
+  },
+  closeButton: {
+    marginLeft: "10px",
+    cursor: "pointer",
+    border: "none",
+    background: "transparent",
+    color: "#fff",
+    fontSize: "16px",
+  },
+  input: { padding: "10px", borderRadius: "5px", border: "1px solid #ddd" },
+  textarea: { padding: "10px", borderRadius: "5px", border: "1px solid #ddd", resize: "none" },
+  select: { padding: "10px", borderRadius: "5px", border: "1px solid #ddd" },
+  fileInput: { border: "none" },
+  button: { backgroundColor: "#4CAF50", color: "#fff", padding: "10px", borderRadius: "5px", border: "none", cursor: "pointer" },
+  previewContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: "10px",
+    borderRadius: "5px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  },
+  previewTitle: { textAlign: "center", color: "#333" },
+  blogImage: { width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "5px" },
+  blogTitle: { color: "#333" },
+  blogText: { color: "#666", fontSize: "14px" },
+  blogGenre: { fontWeight: "bold", fontSize: "12px", color: "#888" },
 };
 
 export default EditBlog;

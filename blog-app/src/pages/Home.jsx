@@ -27,33 +27,31 @@ const Home = () => {
 
   const handleLike = async (id) => {
     if (!user) return alert("Please log in to like blogs!");
-
+  
     try {
-      const blog = blogs.find((b) => b._id === id);
-      const hasLiked = blog.likes.includes(user._id);
-
-      await axios.put(
-        `http://localhost:5000/api/blogs/like/${id}`,
+      const res = await axios.put(
+        `http://localhost:5000/api/blogs/like/${id}`, // Single route
         {},
         { withCredentials: true }
       );
-
-      setBlogs((prev) =>
-        prev.map((b) =>
-          b._id === id
-            ? {
-              ...b,
-              likes: hasLiked
-                ? b.likes.filter((like) => like !== user._id) // Unlike
-                : [...b.likes, user._id], // Like
-            }
-            : b
-        )
-      );
+  
+      console.log("Like API Response:", res.data); // Debugging log
+  
+      if (res.data && res.data.likes) {
+        setBlogs((prev) =>
+          prev.map((b) =>
+            b._id === id ? { ...b, likes: res.data.likes } : b
+          )
+        );
+        alert(res.data.message); // Shows "Liked the blog" or "Unliked the blog"
+      } else {
+        console.error("Unexpected response from server:", res.data);
+      }
     } catch (err) {
-      console.error("Failed to like/unlike blog:", err);
+      console.error("Failed to like/unlike blog:", err.response?.data || err.message);
     }
   };
+  
 
 
   const handleInputChange = (id, value) => {
