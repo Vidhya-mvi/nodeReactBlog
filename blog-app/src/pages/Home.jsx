@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 
 const Home = () => {
@@ -27,23 +29,23 @@ const Home = () => {
 
   const handleLike = async (id) => {
     if (!user) return alert("Please log in to like blogs!");
-  
+
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/blogs/like/${id}`, // Single route
+        `http://localhost:5000/api/blogs/like/${id}`, 
         {},
         { withCredentials: true }
       );
-  
-      console.log("Like API Response:", res.data); // Debugging log
-  
+
+      console.log("Like API Response:", res.data); 
+
       if (res.data && res.data.likes) {
         setBlogs((prev) =>
           prev.map((b) =>
             b._id === id ? { ...b, likes: res.data.likes } : b
           )
         );
-        alert(res.data.message); // Shows "Liked the blog" or "Unliked the blog"
+        toast(res.data.message); 
       } else {
         console.error("Unexpected response from server:", res.data);
       }
@@ -51,7 +53,7 @@ const Home = () => {
       console.error("Failed to like/unlike blog:", err.response?.data || err.message);
     }
   };
-  
+
 
 
   const handleInputChange = (id, value) => {
@@ -80,7 +82,7 @@ const Home = () => {
       setCommentText((prev) => ({ ...prev, [id]: "" }));
     } catch (err) {
       console.error("Failed to add comment:", err);
-      alert("Failed to add comment. Please try again.");
+      toast.error("Failed to add comment. Please try again.");
     }
   };
 
@@ -97,6 +99,7 @@ const Home = () => {
   return (
     <div style={{ padding: "20px" }}>
       <h1 style={{ color: "black" }}>Latest Blogs</h1>
+      <ToastContainer position="top-right" autoClose={2000} />
 
       <div
         style={{
@@ -184,7 +187,7 @@ const Home = () => {
                     handleLike(blog._id);
                   }}
                   style={{
-                    backgroundColor: blog.likes.includes(user._id) ? "#e74c3c" : "#4CAF50", // Red for unlike, Green for like
+                    backgroundColor: blog.likes.includes(user._id) ? "#e74c3c" : "#4CAF50", 
                     color: "#fff",
                     border: "none",
                     padding: "5px 10px",
@@ -196,6 +199,7 @@ const Home = () => {
                 >
                   {blog.likes.includes(user._id) ? "Unlike" : "Like"}
                 </button>
+                
 
               ) : (
                 <p style={{ color: "gray", fontSize: "0.8rem" }}>Log in to like</p>
@@ -240,22 +244,32 @@ const Home = () => {
                 </div>
               )}
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleComments(blog._id);
-                }}
-                style={{ background: "none", color: "#3498db", border: "none", cursor: "pointer" }}
-              >
-                {showComments[blog._id] ? "Hide Comments" : "Show Comments"}
-              </button>
+              {blog.comments.length > 0 ? (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleComments(blog._id);
+                    }}
+                    style={{ background: "none", color: "#3498db", border: "none", cursor: "pointer" }}
+                  >
+                    {showComments[blog._id] ? "Hide Comments" : "Show Comments"}
+                  </button>
 
-              {showComments[blog._id] &&
-                blog.comments.map((comment, index) => (
-                  <p key={index} style={{ fontSize: "0.8rem", color: "#555" }}>
-                    {comment.text} - <strong>{comment.username}</strong>
-                  </p>
-                ))}
+                  {showComments[blog._id] &&
+                    blog.comments.map((comment, index) => (
+                      <p key={index} style={{ fontSize: "0.8rem", color: "#555" }}>
+                      <strong>{comment.postedBy?.username}</strong> - {comment.text} 
+                    </p>
+                    
+                    
+                    ))}
+                </>
+              ) : (
+                <p style={{ fontSize: "0.8rem", color: "#777" }}>No comments here</p>
+              )}
+              
+
             </div>
           </div>
         ))}
