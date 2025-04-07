@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+// import { toast } from "react-toastify";
 
 const MyBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [targetBlogId, setTargetBlogId] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
-
   const userId = user?.id || user?._id;
 
   useEffect(() => {
@@ -38,7 +40,6 @@ const MyBlogs = () => {
       } catch (err) {
         console.error(" Error fetching user blogs:", err.response?.data || err.message);
         setError("Looks like you haven't written any blogs yet — start your first one now!");
-
       } finally {
         setLoading(false);
       }
@@ -48,8 +49,6 @@ const MyBlogs = () => {
   }, [userId, token]);
 
   const handleDeleteBlog = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this blog?")) return;
-
     const originalBlogs = [...blogs];
     setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== id));
 
@@ -60,15 +59,17 @@ const MyBlogs = () => {
       });
 
       if (res.status !== 200) throw new Error("Failed to delete blog.");
+      // toast.success("Blog deleted!");
     } catch (error) {
       console.error(" Error deleting blog:", error.response?.data || error.message);
-      alert(`Failed to delete blog: ${error.response?.data?.message || error.message}`);
+      // toast.error(`Failed to delete blog: ${error.response?.data?.message || error.message}`);
       setBlogs(originalBlogs);
     }
   };
 
   const handleDeleteComment = async (blogId, commentId) => {
-    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    const confirmed = window.confirm("Are you sure you want to delete this comment?");
+    if (!confirmed) return;
 
     try {
       const res = await axios.delete(
@@ -85,14 +86,19 @@ const MyBlogs = () => {
         );
 
         setBlogs(updatedBlogs);
-        alert("Comment deleted successfully!");
+        // toast.success("Comment deleted!");
       } else {
         throw new Error("Failed to delete comment.");
       }
     } catch (error) {
       console.error(" Error deleting comment:", error.response?.data || error.message);
-      alert(`Failed to delete comment: ${error.response?.data?.message || error.message}`);
+      // toast.error(`Failed to delete comment: ${error.response?.data?.message || error.message}`);
     }
+  };
+
+  const confirmDeleteBlog = (id) => {
+    setTargetBlogId(id);
+    setShowConfirm(true);
   };
 
   if (loading) return <p style={{ color: "black" }}>Loading...</p>;
@@ -130,7 +136,7 @@ const MyBlogs = () => {
                   alt={blog.title}
                   style={{
                     width: "100%",
-                    height: "700px",
+                    height: "1500px",
                     objectFit: "cover",
                     borderRadius: "12px",
                     marginBottom: "0.5rem",
@@ -178,7 +184,7 @@ const MyBlogs = () => {
                       border: "none",
                       cursor: "pointer",
                     }}
-                    onClick={() => handleDeleteBlog(blog._id)}
+                    onClick={() => confirmDeleteBlog(blog._id)}
                   >
                     Delete
                   </button>
@@ -207,6 +213,58 @@ const MyBlogs = () => {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {showConfirm && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0,
+          width: "100vw", height: "100vh",
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex", justifyContent: "center", alignItems: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: "white",
+            padding: "2rem",
+            borderRadius: "10px",
+            textAlign: "center",
+            maxWidth: "400px",
+            width: "100%"
+          }}>
+            <h3 style={{ marginBottom: "1rem",color:"black" }}>Are you sure you want to delete this blog?</h3>
+            <button
+              onClick={async () => {
+                await handleDeleteBlog(targetBlogId);
+                setShowConfirm(false);
+              }}
+              style={{
+                backgroundColor: "#EF4444",
+                color: "white",
+                padding: "0.5rem 1.2rem",
+                borderRadius: "6px",
+                marginRight: "1rem",
+                border: "none",
+                cursor: "pointer"
+              }}
+            >
+               Delete
+            </button>
+            <button
+              onClick={() => setShowConfirm(false)}
+              style={{
+                backgroundColor: "#9CA3AF",
+                color: "white",
+                padding: "0.5rem 1.2rem",
+                borderRadius: "6px",
+                border: "none",
+                cursor: "pointer"
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </div>

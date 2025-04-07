@@ -26,6 +26,8 @@ const Layout = ({ children }) => {
     "Books",
     "Art",
     "Manhwa",
+    "Nature",
+    "myths"
   ];
 
   const handleGenreClick = (genre) => {
@@ -64,7 +66,7 @@ const Layout = ({ children }) => {
           boxSizing: "border-box",
         }}
       >
-        {/* Genre Dropdown */}
+       
         <div
           style={{ cursor: "pointer", fontSize: "1.8rem", padding: "0 10px" }}
           onClick={() => setShowGenres(!showGenres)}
@@ -107,7 +109,7 @@ const Layout = ({ children }) => {
           ))}
         </div>
 
-        {/* Blog Title */}
+      
         <div
           style={{
             fontSize: "1.5rem",
@@ -126,7 +128,7 @@ const Layout = ({ children }) => {
           <SearchBar />
         </div>
 
-        {/* Navigation Links */}
+      
         <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
           {user ? (
             <>
@@ -157,7 +159,7 @@ const Layout = ({ children }) => {
             </>
           )}
 
-          {/* Logout Button */}
+      
           {user && (
             <button
               onClick={handleLogout}

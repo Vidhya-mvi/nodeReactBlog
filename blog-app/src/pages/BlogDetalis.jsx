@@ -160,7 +160,7 @@ const BlogDetails = () => {
           />
         )}
 
-        <h1 style={{ marginBottom: "10px", color: "#333" }}>{blog.title}</h1>
+       
 
         <p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
           Genre: {blog.genre || "Unknown"}

@@ -14,7 +14,7 @@ const CreateBlog = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const genres = ["Technology", "Health", "Lifestyle", "Finance", "Education", "Anime", "Books", "Art", "Manhwa"];
+  const genres = ["Technology", "Health", "Lifestyle", "Finance", "Education", "Anime", "Books", "Art", "Manhwa","Nature","myths"];
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -64,7 +64,7 @@ const CreateBlog = () => {
 
       setTimeout(dismissAlert, 3000);
 
-      // Reset form
+     
       setTitle("");
       setContent("");
       setGenre("");
@@ -100,7 +100,7 @@ const CreateBlog = () => {
       {error && <p style={styles.error}>{error}</p>}
 
       <div style={styles.wrapper}>
-        {/* Left: Form */}
+     
         <form onSubmit={handleSubmit} style={styles.form}>
           <h1 style={styles.heading}>Create a New Blog</h1>
 
@@ -123,7 +123,7 @@ const CreateBlog = () => {
           </button>
         </form>
 
-        {/* Right: Live Preview */}
+      
         <div style={styles.previewContainer}>
           <h2 style={styles.previewTitle}>Live Preview</h2>
           <div style={styles.blogCard}>
@@ -140,7 +140,7 @@ const CreateBlog = () => {
   );
 };
 
-// Styles
+
 const styles = {
   container: {
     padding: "20px",
@@ -203,9 +203,9 @@ const styles = {
   },
   previewTitle: { textAlign: "center", color: "#333" },
   blogCard: { display: "flex", flexDirection: "column", alignItems: "center", padding: "10px" },
-  blogImage: { width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "5px" },
+  blogImage: { width: "100%", maxHeight: "500px", objectFit: "cover", borderRadius: "5px" },
   blogTitle: { color: "#333" },
-  blogText: { color: "#666", fontSize: "14px" },
+  blogText: { color: "#666", fontSize: "14px",whiteSpace: "pre-line" },
   blogGenre: { fontWeight: "bold", fontSize: "12px", color: "#888" },
 };
 

@@ -16,7 +16,7 @@ const EditBlog = () => {
   const [alertType, setAlertType] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const genres = ["Technology", "Health", "Lifestyle", "Finance", "Education", "Anime", "Books", "Art", "Manhwa"];
+  const genres = ["Technology", "Health", "Lifestyle", "Finance", "Education", "Anime", "Books", "Art", "Manhwa","Nature","myths"];
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -32,7 +32,7 @@ const EditBlog = () => {
         if (res.data.image) {
           setPreview(`http://localhost:5000${res.data.image}`);
         }}catch (err) {
-          console.error("❌ Failed to fetch blog:", err.response || err.message);
+          console.error(" Failed to fetch blog:", err.response || err.message);
           setError(err.response?.data?.message || "Failed to load blog. Please try again.");
         }
         
@@ -114,7 +114,7 @@ const EditBlog = () => {
       {error && <p style={styles.error}>{error}</p>}
 
       <div style={styles.wrapper}>
-        {/* Left: Form */}
+        
         <form onSubmit={handleUpdate} style={styles.form}>
           <h1 style={styles.heading}>Edit Blog</h1>
 
@@ -144,7 +144,7 @@ const EditBlog = () => {
           </button>
         </form>
 
-        {/* Right: Live Preview */}
+       
         <div style={styles.previewContainer}>
           <h2 style={styles.previewTitle}>Live Preview</h2>
           <div style={styles.blogCard}>
@@ -161,11 +161,11 @@ const EditBlog = () => {
   );
 };
 
-// Styles
+
 const styles = {
   container: {
     padding: "20px",
-    maxWidth: "1000px",
+    maxWidth: "1300px",
     margin: "0 auto",
     backgroundColor: "#f4f4f4",
     borderRadius: "8px",
@@ -223,9 +223,9 @@ const styles = {
     boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
   },
   previewTitle: { textAlign: "center", color: "#333" },
-  blogImage: { width: "100%", maxHeight: "200px", objectFit: "cover", borderRadius: "5px" },
+  blogImage: { width: "100%", maxHeight: "500px", objectFit: "cover", borderRadius: "5px" },
   blogTitle: { color: "#333" },
-  blogText: { color: "#666", fontSize: "14px" },
+  blogText: { color: "#666", fontSize: "14px",whiteSpace: "pre-line" },
   blogGenre: { fontWeight: "bold", fontSize: "12px", color: "#888" },
 };
 
