@@ -1,7 +1,7 @@
 const Blog = require("../models/blog");
 const User = require("../models/user")
 
-//  Create a new blog with genre
+//  Create a new blog 
 const createBlog = async (req, res) => {
   const { title, content, genre } = req.body;
 

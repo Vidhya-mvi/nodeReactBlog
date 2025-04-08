@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const MyBlogs = () => {
   const [blogs, setBlogs] = useState([]);
@@ -59,10 +59,10 @@ const MyBlogs = () => {
       });
 
       if (res.status !== 200) throw new Error("Failed to delete blog.");
-      // toast.success("Blog deleted!");
+      toast.success("Blog deleted!");
     } catch (error) {
       console.error(" Error deleting blog:", error.response?.data || error.message);
-      // toast.error(`Failed to delete blog: ${error.response?.data?.message || error.message}`);
+      toast.error(`Failed to delete blog: ${error.response?.data?.message || error.message}`);
       setBlogs(originalBlogs);
     }
   };
@@ -86,13 +86,13 @@ const MyBlogs = () => {
         );
 
         setBlogs(updatedBlogs);
-        // toast.success("Comment deleted!");
+        toast.success("Comment deleted!");
       } else {
         throw new Error("Failed to delete comment.");
       }
     } catch (error) {
       console.error(" Error deleting comment:", error.response?.data || error.message);
-      // toast.error(`Failed to delete comment: ${error.response?.data?.message || error.message}`);
+      toast.error(`Failed to delete comment: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -111,7 +111,7 @@ const MyBlogs = () => {
       {blogs.length === 0 ? (
         <p style={{ color: "black" }}>No blogs found.</p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
           {blogs.map((blog) => (
             <div
               key={blog._id}
@@ -233,7 +233,7 @@ const MyBlogs = () => {
             maxWidth: "400px",
             width: "100%"
           }}>
-            <h3 style={{ marginBottom: "1rem",color:"black" }}>Are you sure you want to delete this blog?</h3>
+            <h3 style={{ marginBottom: "1rem", color: "black" }}>Are you sure you want to delete this blog?</h3>
             <button
               onClick={async () => {
                 await handleDeleteBlog(targetBlogId);
@@ -249,7 +249,7 @@ const MyBlogs = () => {
                 cursor: "pointer"
               }}
             >
-               Delete
+              Delete
             </button>
             <button
               onClick={() => setShowConfirm(false)}
