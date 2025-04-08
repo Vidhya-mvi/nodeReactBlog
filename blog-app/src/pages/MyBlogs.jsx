@@ -111,7 +111,13 @@ const MyBlogs = () => {
       {blogs.length === 0 ? (
         <p style={{ color: "black" }}>No blogs found.</p>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: blogs.length === 1 ? "1fr" : "repeat(2, 1fr)",
+    gap: "1rem",
+  }}
+>
           {blogs.map((blog) => (
             <div
               key={blog._id}
@@ -127,7 +133,7 @@ const MyBlogs = () => {
                 flexDirection: "column",
                 justifyContent: "space-between",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               {blog.image && (

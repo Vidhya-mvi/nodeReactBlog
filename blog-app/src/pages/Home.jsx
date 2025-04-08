@@ -63,8 +63,8 @@ const Home = () => {
   const handleComment = async (id) => {
     const comment = commentText[id];
 
-    if (!user) return alert("Please log in to comment!");
-    if (!comment?.trim()) return alert("Comment cannot be empty!");
+    if (!user) ;
+    if (!comment?.trim()) ;
 
     try {
       const res = await axios.post(
