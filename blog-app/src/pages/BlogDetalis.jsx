@@ -40,27 +40,32 @@ const BlogDetails = () => {
     return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
-  const handleShare = () => {
-    const blogUrl = `${window.location.origin}/blogs/${id}`;
-    navigator.clipboard.writeText(blogUrl);
-    toast.success("Link copied to clipboard!");
-  };
 
-  const handleLike = async () => {
-    if (!user) return toast.warn("Please log in to like this post!");
+
+  const handleLike = async (id) => {
+    if (!user) return toast.warn("Please log in to like blogs!");
 
     try {
-      const res = await axios.patch(
+      const res = await axios.put(
         `http://localhost:5000/api/blogs/like/${id}`,
         {},
         { withCredentials: true }
       );
 
-      setBlog(res.data);
-      toast.success("Liked the blog!");
+      console.log("Like API Response:", res.data);
+
+      if (res.data && res.data.likes) {
+        setBlog((prev) => ({
+          ...prev,
+          likes: res.data.likes,
+        }));
+        toast.success(res.data.message || "Liked the blog!");
+      } else {
+        console.error("Unexpected response from server:", res.data);
+      }
     } catch (err) {
-      console.error("Failed to like blog:", err.response?.data || err.message);
-      toast.error("Failed to like blog!");
+      console.error("Failed to like/unlike blog:", err.response?.data || err.message);
+      toast.error("Failed to like/unlike blog!");
     }
   };
 
@@ -160,7 +165,7 @@ const BlogDetails = () => {
           />
         )}
 
-       
+
 
         <p style={{ fontSize: "0.8rem", color: "#3498db", fontWeight: "bold" }}>
           Genre: {blog.genre || "Unknown"}
@@ -177,7 +182,7 @@ const BlogDetails = () => {
         </p>
 
         <button
-          onClick={handleLike}
+          onClick={() => handleLike(blog._id)}
           disabled={!user}
           style={{
             marginTop: "10px",
@@ -195,26 +200,10 @@ const BlogDetails = () => {
             opacity: user ? "1" : "0.6",
           }}
         >
-          {user ? (blog.likes.includes(user?._id) ? "Liked" : "Like") : " Like"}
-          ({blog.likes.length})
+          {user ? (blog.likes.includes(user?._id) ? "Liked" : "Like") : " Like"} ({blog.likes.length})
         </button>
 
 
-        <button
-          onClick={handleShare}
-          style={{
-            marginLeft: "10px",
-            padding: "8px 10px",
-            backgroundColor: "#2ecc71",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          Share
-        </button>
 
 
         {user ? (
